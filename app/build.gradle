@@ -20,8 +20,9 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit test framework.
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    // Use JUnit test framework.u
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
+
     
 
     // This dependency is used by the application.
