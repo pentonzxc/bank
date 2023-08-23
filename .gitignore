@@ -2,6 +2,7 @@
 .gradle
 .vscode
 app/bin
+ref.txt
 
 # Ignore Gradle build output directory
 build

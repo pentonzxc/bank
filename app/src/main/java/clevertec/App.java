@@ -3,12 +3,40 @@
  */
 package clevertec;
 
+import java.util.ArrayList;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        exampleFlow();
     }
+
+    static public void exampleFlow() {
+        var bank = new Bank("example");
+        var user1 = new User("Kolya", "Urusov", "1990-02-23");
+        var user2 = new User("Pasha", "Urusov", "1990-02-23");
+        var account1 = new Account(user1, bank, 100);
+        var account2 = new Account(user2, bank, 20);
+
+        Transaction transaction = new Transaction(account1);
+        System.out.println("Before 1:: " + account1.getMoney());
+        System.out.println("Before 2:: " + account2.getMoney());
+
+        Transaction transaction2 = new Transaction(account2, account1);
+
+
+        transaction.beginTransaction(
+                new TransactionAction(ActionType.ADD, 10),
+                new TransactionAction(ActionType.SUB, 5));
+        transaction2.beginTransaction(
+                new TransactionAction(ActionType.ADD, 15),
+                new TransactionAction(ActionType.SUB, 5));
+
+        System.out.println("After1 :: " + account1.getMoney());
+        System.out.println("After2 :: " + account2.getMoney());
+
+    }
+
 }
