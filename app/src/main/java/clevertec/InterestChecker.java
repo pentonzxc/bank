@@ -1,6 +1,7 @@
 package clevertec;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -9,7 +10,7 @@ public class InterestChecker {
 
     private static InterestChecker INSTANCE;
 
-    private Double interest;
+    private double interest = 1;
 
     private ScheduledFuture<?> interestTask;
 
@@ -50,20 +51,23 @@ public class InterestChecker {
     }
 
     private void checkInterest() {
-        if (WORK_PERIOD && isTodayLastDayOfMonth()) {
-            // remove the task and add in a day
+        try {
+            if (WORK_PERIOD && isTodayLastDayOfMonth()) {
 
-            // List<Bank> banks = BankStorage.getAll();
-            // for (var bank : banks) {
-            // for (Account account : bank.accounts) {
-            // synchronized (account.getLOCK()) {
-            // account.addPercent(interest);
-            // }
-            // }
-            // }
+                List<Bank> banks = BankStorage.getAll();
+                for (Bank bank : banks) {
+                    for (Account account : bank.getAccounts()) {
+                        synchronized (account.getLOCK()) {
+                            account.addPercent(interest);
+                        }
+                    }
+                }
 
-            resumeInterestTask = threadPool.schedule(this::resumeCheckInterestInDay, 1, TimeUnit.DAYS);
-            WORK_PERIOD = false;
+                resumeInterestTask = threadPool.schedule(this::resumeCheckInterestInDay, 1, TimeUnit.DAYS);
+                WORK_PERIOD = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
