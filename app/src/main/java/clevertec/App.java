@@ -9,8 +9,11 @@ import java.util.function.Consumer;
 
 public class App {
 
-    public static void main(String[] args) {
-        exampleFlow();
+    public static void main(String[] args) throws InterruptedException {
+        var checker = InterestChecker.instance();
+        var future = checker.run();
+
+        future.cancel(true);
     }
 
     static public void exampleFlow() {
@@ -25,7 +28,6 @@ public class App {
         System.out.println("Before 2:: " + account2.getMoney());
 
         Transaction transaction2 = new Transaction(account2, account1);
-
 
         transaction.beginTransaction(
                 new TransactionAction(ActionType.ADD, 10),
