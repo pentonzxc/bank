@@ -2,9 +2,11 @@ package clevertec;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
 
 public class InterestChecker {
 
@@ -12,9 +14,11 @@ public class InterestChecker {
 
     private double interest = 1;
 
-    private ScheduledFuture<?> interestTask;
+    private ScheduledFuture<Void> interestTask;
 
     private ScheduledFuture<?> resumeInterestTask;
+
+    public List<Bank> bankStorage = BankStorage.getAll();
 
     final private ScheduledThreadPoolExecutor threadPool;
 
@@ -25,36 +29,44 @@ public class InterestChecker {
         threadPool.setRemoveOnCancelPolicy(true);
     }
 
-    public ScheduledFuture<?> run() {
+    @SuppressWarnings("unchecked")
+    public ScheduledFuture<Void> run() {
         if ((interestTask != null && interestTask.isCancelled()) || interestTask == null) {
-            interestTask = threadPool.scheduleWithFixedDelay(this::checkInterest, 0, 30, TimeUnit.SECONDS);
+            interestTask = (ScheduledFuture<Void>) threadPool.scheduleWithFixedDelay(this::checkInterest, 10, 30,
+                    TimeUnit.SECONDS);
         }
+        System.out.println("Active count :: " + threadPool.getActiveCount());
+        System.out.println("Size of queue :: " + threadPool.getQueue().size());
         return interestTask;
     }
 
-    public boolean stop() {
-        if (interestTask.isCancelled()) {
-            return false;
+    public Future<Void> stop() {
+        if (interestTask == null || interestTask.isCancelled()) {
+            return CompletableFuture.completedFuture(null);
         }
         interestTask.cancel(true);
-        return true;
+        return CompletableFuture.runAsync(() -> {
+            while (interestTask.getDelay(TimeUnit.MILLISECONDS) >= 0) {
+            }
+        });
     }
 
     public static InterestChecker instance() {
         // P.S : I know about double synchronized
         if (INSTANCE == null) {
             synchronized (InterestChecker.class) {
-                return new InterestChecker(1);
+                return new InterestChecker(2);
             }
         }
         return INSTANCE;
     }
 
     private void checkInterest() {
+        System.out.print("I'm gay");
         try {
             if (WORK_PERIOD && isTodayLastDayOfMonth()) {
 
-                List<Bank> banks = BankStorage.getAll();
+                List<Bank> banks = bankStorage;
                 for (Bank bank : banks) {
                     for (Account account : bank.getAccounts()) {
                         synchronized (account.getLOCK()) {
@@ -86,4 +98,5 @@ public class InterestChecker {
 
         return today.getDayOfMonth() == lastdayOfMonth;
     }
+
 }
