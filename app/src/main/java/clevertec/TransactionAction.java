@@ -9,7 +9,7 @@ import lombok.NonNull;
 public class TransactionAction {
     ActionType action;
 
-    Integer change;
+    double change;
 
     public ActionType getType() {
         return action;

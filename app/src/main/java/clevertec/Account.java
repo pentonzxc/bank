@@ -10,7 +10,7 @@ public class Account {
 
     String id;
 
-    Integer money = 0;
+    double money = 0d;
 
     Bank bank;
 
@@ -23,7 +23,7 @@ public class Account {
     }
 
     // public?
-    /* private */ public Account(User user, Bank bank, Integer money) {
+    /* private */ public Account(User user, Bank bank, double money) {
         this(user, bank);
         this.money = money;
     }
@@ -34,22 +34,22 @@ public class Account {
         bank.addAccount(this);
     }
 
-    public Integer addMoney(Integer money) {
+    public double addMoney(double money) {
         this.money += money;
         return this.money;
     }
 
-    public Integer subMoney(Integer money) {
+    public double subMoney(double money) {
         if (this.money <= money) {
-            return -1;
+            return -1d;
         }
         this.money -= money;
         return this.money;
     }
 
-    public Integer transfer(Account target, int change) {
+    public double transfer(Account target, double change) {
         if (subMoney(change) == -1) {
-            return -1;
+            return -1d;
         }
         target.addMoney(change);
         return this.money;

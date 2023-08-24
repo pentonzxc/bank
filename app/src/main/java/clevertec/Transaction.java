@@ -45,9 +45,9 @@ public class Transaction {
     // TODO: maybe add rollback....
     private boolean processTransaction(TransactionAction[] actions) {
         for (var action : actions) {
-            int change = action.getChange();
+            double change = action.getChange();
             ActionType actionType = action.getType();
-            int success = 0;
+            double success = 0;
 
             if (target == null) {
                 if (actionType == ActionType.ADD) {
@@ -80,8 +80,10 @@ public class Transaction {
     }
 
     private boolean compareStrings(String s1, String s2) {
-        if (s1 == null) return false;
-        else if(s2 == null) return false;
+        if (s1 == null)
+            return false;
+        else if (s2 == null)
+            return false;
         return s1.compareTo(s2) >= 1;
     }
 
