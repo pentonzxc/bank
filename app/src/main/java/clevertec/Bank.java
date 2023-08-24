@@ -3,9 +3,13 @@ package clevertec;
 import java.util.Set;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Bank {
+    String id;
+
     String name;
 
     public Bank(String name) {

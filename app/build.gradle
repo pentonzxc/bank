@@ -31,6 +31,8 @@ dependencies {
 	
 	testCompileOnly 'org.projectlombok:lombok:1.18.28'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+
     
 
     // This dependency is used by the application.

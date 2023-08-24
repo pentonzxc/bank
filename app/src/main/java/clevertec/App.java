@@ -3,6 +3,8 @@
  */
 package clevertec;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -10,7 +12,19 @@ import java.util.function.Consumer;
 public class App {
 
     public static void main(String[] args) {
-        exampleFlow();
+        Connection connection = DatabaseConfig.getConnecion();
+        try {
+            ResultSet result = connection.createStatement().executeQuery("select * from bank");
+            while (result.next()) {
+                String id = result.getString("id");
+                String name = result.getString("name");
+                System.out.print("Name :: " + name + "; Id :: " + id);
+            }
+            result.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     static public void exampleFlow() {
@@ -25,7 +39,6 @@ public class App {
         System.out.println("Before 2:: " + account2.getMoney());
 
         Transaction transaction2 = new Transaction(account2, account1);
-
 
         transaction.beginTransaction(
                 new TransactionAction(ActionType.ADD, 10),
