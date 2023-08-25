@@ -3,14 +3,16 @@
  */
 package clevertec;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class App {
 
     public static void main(String[] args) {
-        exampleFlow();
     }
 
     static public void exampleFlow() {
@@ -25,7 +27,6 @@ public class App {
         System.out.println("Before 2:: " + account2.getMoney());
 
         Transaction transaction2 = new Transaction(account2, account1);
-
 
         transaction.beginTransaction(
                 new TransactionAction(ActionType.ADD, 10),
