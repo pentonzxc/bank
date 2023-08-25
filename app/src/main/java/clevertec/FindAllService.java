@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class FindAllService {
@@ -20,12 +22,12 @@ public class FindAllService {
             Bank bank;
             while (rs.next()) {
                 bank = new Bank();
-                bank.setId(rs.getString("id"));
+                bank.setId(rs.getInt("id"));
                 bank.setName(rs.getString("name"));
                 banks.add(bank);
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return banks;
@@ -42,37 +44,137 @@ public class FindAllService {
             User user;
             while (rs.next()) {
                 user = new User();
-                user.setId(rs.getString("id"));
+                user.setId(rs.getInt("id"));
                 user.setFirstName(rs.getString("first_name"));
                 user.setLastName(rs.getString("last_name"));
                 user.setBirthDate(rs.getString("birth_date"));
                 users.add(user);
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return users;
     }
 
-    public List<User> accounts() {
-        return null;
+    @SuppressWarnings("unchecked")
+    public List<Account> accounts() {
+        Object[] entityLists = allEntities();
+
+        return (List<Account>) entityLists[0];
     }
 
-    public User user(String id) {
-        return null;
-    }
+    public Object[] allEntities() {
+        List<Account> accounts = null;
+        HashMap<Integer, Bank> banks = null;
+        HashMap<Integer, User> users = null;
+        String accountQuery = "select * from account";
 
-    public User user(String id, Connection con) throws SQLException {
-        String query = "select * form user where user.id = ?";
+        try (Connection con = DatabaseConfig.getConnecion();
+                PreparedStatement accountPs = con.prepareStatement(accountQuery);
+                ResultSet accountRs = accountPs.executeQuery()) {
+            accounts = new ArrayList<>();
+            Account account;
+            banks = new HashMap<>();
+            users = new HashMap<>();
 
-        try {
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, id);
-        } finally {
+            while (accountRs.next()) {
+                account = new Account();
 
+                account.setId(accountRs.getInt("id"));
+                Integer bankId = (accountRs.getInt("bank_id"));
+                Bank bankOpt = banks.getOrDefault(bankId, null);
+                if (bankOpt != null) {
+                    bankOpt.addAccount(account);
+                    account.setBank(bankOpt);
+                } else {
+
+                    String bankQuery = "select * from bank where id = ?";
+
+                    try (PreparedStatement bankPs = con.prepareStatement(bankQuery)) {
+                        bankPs.setInt(1, bankId);
+
+                        try (ResultSet bankRs = bankPs.executeQuery()) {
+                            bankRs.next();
+
+                            bankOpt = new Bank();
+                            bankOpt.setId(bankRs.getInt("id"));
+                            bankOpt.setName(bankRs.getString("name"));
+
+                            bankOpt.addAccount(account);
+                            banks.put(bankId, bankOpt);
+                        }
+                    }
+                }
+
+                Integer userId = accountRs.getInt("user_id");
+                User userOpt = users.getOrDefault(userId, null);
+                if (userOpt != null) {
+                    userOpt.addAccount(account);
+                } else {
+                    String userQuery = "select * from user_ where id = ?";
+
+                    try (PreparedStatement userPs = con.prepareStatement(userQuery)) {
+                        userPs.setInt(1, userId);
+                        try (ResultSet userRs = userPs.executeQuery()) {
+                            userRs.next();
+
+                            userOpt = new User();
+                            userOpt.setId(userRs.getInt("id"));
+                            userOpt.setFirstName(userRs.getString("first_name"));
+                            userOpt.setLastName(userRs.getString("last_name"));
+                            userOpt.setBirthDate(userRs.getString("birth_date"));
+
+                            userOpt.addAccount(account);
+                            users.put(userId, userOpt);
+                        }
+                    }
+                }
+
+                account.setBank(bankOpt);
+                account.setUser(userOpt);
+
+                accounts.add(account);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
-        return null;
+        Collection<Bank> tmp1 = banks.values();
+        List<Bank> banks_ = tmp1 instanceof List ? (List<Bank>) tmp1 : new ArrayList<Bank>(tmp1);
+        Collection<User> tmp2 = users.values();
+        List<User> users_ = tmp2 instanceof List ? (List<User>) tmp2 : new ArrayList<User>(tmp2);
+
+        return new Object[] { accounts, banks_, users_ };
+    }
+
+    public User user(Integer id) {
+        String query = "select * form user where user.id = ?";
+        User user = null;
+
+        try (Connection con = DatabaseConfig.getConnecion();
+                PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next())
+                    return null;
+
+                user = new User();
+                user.setId(rs.getInt("id"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setBirthDate(rs.getString("birth_date"));
+
+                if (rs.next()) {
+                    throw new RuntimeException("User with id :: " + id + ", more that one");
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return user;
     }
 }
