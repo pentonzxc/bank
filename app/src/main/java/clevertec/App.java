@@ -7,16 +7,35 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.checkerframework.checker.units.qual.degrees;
+
+import clevertec.account_interest.scheduler.InterestChecker;
+import clevertec.account_interest.scheduler.InterestCheckerFactory;
+
 public class App {
 
-    public static void main(String[] args) throws InterruptedException {
-        var checker = InterestChecker.instance();
-        var future = checker.run();
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        InterestChecker checker = InterestCheckerFactory.aInterestChecker();
+        checker.run();
 
-        future.cancel(true);
+        checker.stop();
+        System.out.println("hello");
+
+        // Runnable inf = () -> {
+        //     while (true) {
+        //     }
+        // };
+
+        // CompletableFuture.
+
+        // Executors.newFixedThreadPool(2).submit(inf);
     }
 
     static public void exampleFlow() {
