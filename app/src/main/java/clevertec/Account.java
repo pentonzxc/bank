@@ -36,7 +36,12 @@ public class Account {
         return this.money;
     }
 
-    public double subMoney(double money) {
+    public double addPercent(double percent) {
+        money = money * (1 + percent / 100);
+        return money;
+    }
+
+    public Double subMoney(double money) {
         if (this.money <= money) {
             return -1d;
         }

@@ -58,13 +58,13 @@ public class FindAllService {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Account> accounts() {
+    static public List<Account> accounts() {
         Object[] entityLists = allEntities();
 
         return (List<Account>) entityLists[0];
     }
 
-    public Object[] allEntities() {
+    static public Object[] allEntities() {
         List<Account> accounts = null;
         HashMap<Integer, Bank> banks = null;
         HashMap<Integer, User> users = null;
@@ -82,6 +82,7 @@ public class FindAllService {
                 account = new Account();
 
                 account.setId(accountRs.getInt("id"));
+                account.setMoney(accountRs.getDouble("money_"));
                 Integer bankId = (accountRs.getInt("bank_id"));
                 Bank bankOpt = banks.getOrDefault(bankId, null);
                 if (bankOpt != null) {
