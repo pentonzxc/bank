@@ -1,8 +1,16 @@
 # Ignore Gradle project-specific cache directory
 .gradle
 .vscode
+
+
+# custom
+# ignore binary code
 app/bin
+# some ref for dev purp :)
 ref.txt
+# python person txt generator
+# random_person_generator.py
+# persons.txt
 
 # Ignore Gradle build output directory
 build

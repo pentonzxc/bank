@@ -31,8 +31,8 @@ public class Transaction {
                 processTransaction(actions);
             }
         } else {
-            Object lock1 = compareStrings(target.id, initiator.id) ? initiator.LOCK : target.LOCK;
-            Object lock2 = compareStrings(target.id, initiator.id) ? target.LOCK : initiator.LOCK;
+            Object lock1 = target.id < initiator.id ? initiator.LOCK : target.LOCK;
+            Object lock2 = target.id < initiator.id ? target.LOCK : initiator.LOCK;
             synchronized (lock1) {
                 synchronized (lock2) {
                     processTransaction(actions);
@@ -79,12 +79,12 @@ public class Transaction {
         return true;
     }
 
-    private boolean compareStrings(String s1, String s2) {
-        if (s1 == null)
-            return false;
-        else if (s2 == null)
-            return false;
-        return s1.compareTo(s2) >= 1;
-    }
+    // private boolean compareStrings(String s1, String s2) {
+    // if (s1 == null)
+    // return false;
+    // else if (s2 == null)
+    // return false;
+    // return s1.compareTo(s2) >= 1;
+    // }
 
 }

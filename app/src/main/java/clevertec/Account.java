@@ -1,14 +1,11 @@
 package clevertec;
 
-import java.util.Optional;
-import java.util.OptionalInt;
+import lombok.NoArgsConstructor;
 
-import lombok.Data;
-
-@Data
+@NoArgsConstructor
 public class Account {
 
-    String id;
+    Integer id;
 
     double money = 0d;
 
@@ -59,4 +56,44 @@ public class Account {
         target.addMoney(change);
         return this.money;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public double getMoney() {
+        return money;
+    }
+
+    public void setMoney(double money) {
+        this.money = money;
+    }
+
+    public Bank getBank() {
+        return bank;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Object getLOCK() {
+        return LOCK;
+    }
+
+
+
+    
 }
