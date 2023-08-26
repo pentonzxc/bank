@@ -18,16 +18,16 @@ import lombok.extern.slf4j.Slf4j;
 public class Transaction {
     String id;
 
-    Account initiator;
+    Account origin;
 
     Account target;
 
-    public Transaction(Account initiator) {
-        this(initiator, null);
+    public Transaction(Account origin) {
+        this(origin, null);
     }
 
-    public Transaction(Account initiator, Account target) {
-        this.initiator = initiator;
+    public Transaction(Account origin, Account target) {
+        this.origin = origin;
         this.target = target;
 
     }
@@ -38,12 +38,12 @@ public class Transaction {
 
         try {
             if (target == null) {
-                synchronized (initiator.getLock()) {
+                synchronized (origin.getLock()) {
                     processTransaction(actions);
                 }
             } else {
-                Object lock1 = target.getId() < initiator.getId() ? initiator.getLock() : target.getLock();
-                Object lock2 = target.getId() < initiator.getId() ? target.getLock() : initiator.getLock();
+                Object lock1 = target.getId() < origin.getId() ? origin.getLock() : target.getLock();
+                Object lock2 = target.getId() < origin.getId() ? target.getLock() : origin.getLock();
                 synchronized (lock1) {
                     synchronized (lock2) {
                         checks = processTransaction(actions);
@@ -61,10 +61,10 @@ public class Transaction {
 
     // TODO maybe add rollback:
     private List<TransactionCheck> processTransaction(TransactionAction[] actions) throws TransactionException {
-        Account copyInitiator = new Account(initiator.getMoney());
+        Account copyOrigin = new Account(origin.getMoney());
         Account copyTarget = target != null ? new Account(target.getMoney()) : null;
 
-        Pair<List<TransactionCheck>, Boolean> result = doTranscationActions(actions, copyInitiator, copyTarget);
+        Pair<List<TransactionCheck>, Boolean> result = doTranscationActions(actions, copyOrigin, copyTarget);
 
         List<TransactionCheck> checks = result.first();
 
@@ -75,7 +75,7 @@ public class Transaction {
             throw new TransactionException();
         }
 
-        initiator.setMoney(copyInitiator.getMoney());
+        origin.setMoney(copyOrigin.getMoney());
         if (copyTarget != null)
             target.setMoney(copyTarget.getMoney());
         // log success
@@ -85,7 +85,7 @@ public class Transaction {
 
     private Pair<List<TransactionCheck>, Boolean> doTranscationActions(
             TransactionAction[] actions,
-            Account initiator,
+            Account origin,
             Account target) {
         List<TransactionCheck> transactionChecks = new ArrayList<>();
 
@@ -98,18 +98,18 @@ public class Transaction {
 
             if (target == null) {
                 if (actionType == ActionType.ADD) {
-                    initiator.addMoney(change);
+                    origin.addMoney(change);
                 } else {
-                    success = initiator.subMoney(change);
+                    success = origin.subMoney(change);
                 }
 
                 actionDirection = ActionDirection.ACCOUNT_TRANSFER;
             } else {
                 // TODO: some misunderstanding
                 if (actionType == ActionType.ADD) {
-                    success = target.transfer(initiator, change);
+                    success = target.transfer(origin, change);
                 } else {
-                    success = initiator.transfer(target, change);
+                    success = origin.transfer(target, change);
                 }
 
                 actionDirection = ActionDirection.ACCOUNT_ACCOUNT_TRANSFER;
@@ -123,7 +123,7 @@ public class Transaction {
                     transactionCheck,
                     transactionCheck.getDescription(),
                     actionType,
-                    initiator,
+                    origin,
                     target);
             transactionChecks.add(transactionCheck);
 
