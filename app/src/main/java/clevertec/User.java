@@ -18,6 +18,8 @@ public class User {
 
     private Set<Account> accounts;
 
+
+  
     public User() {
         accounts = new HashSet<>();
     }
@@ -74,7 +76,5 @@ public class User {
     public void setAccounts(Set<Account> accounts) {
         this.accounts = accounts;
     }
-
-    
 
 }

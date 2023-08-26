@@ -1,4 +1,4 @@
-package clevertec;
+package clevertec.util;
 
 import java.time.LocalDate;
 

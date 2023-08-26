@@ -1,4 +1,4 @@
-package clevertec;
+package clevertec.transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

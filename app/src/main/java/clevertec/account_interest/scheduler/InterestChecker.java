@@ -7,12 +7,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-
-import com.google.common.base.Supplier;
+import java.util.function.Supplier;
 
 import clevertec.Account;
 import clevertec.Bank;
-import clevertec.DateUtil;
+import clevertec.util.DateUtil;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -77,7 +76,7 @@ public class InterestChecker {
                 for (Bank bank : banks) {
                     // System.out.println("in banks");
                     for (Account account : bank.getAccounts()) {
-                        synchronized (account.getLOCK()) {
+                        synchronized (account.getLock()) {
                             // System.out.println("add");
                             account.addPercent(interest);
                         }

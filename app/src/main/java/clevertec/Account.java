@@ -13,7 +13,9 @@ public class Account {
 
     User user;
 
-    final Object LOCK = new Object();
+    String accountNumber = "1";
+
+    private final Object lock = new Object();
 
     public Account(User user) {
         this.user = user;
@@ -22,6 +24,12 @@ public class Account {
     // public?
     /* private */ public Account(User user, Bank bank, double money) {
         this(user, bank);
+        this.money = money;
+    }
+
+    
+
+    public Account(double money) {
         this.money = money;
     }
 
@@ -89,11 +97,16 @@ public class Account {
         this.user = user;
     }
 
-    public Object getLOCK() {
-        return LOCK;
+    public Object getLock() {
+        return lock;
     }
 
+    public String getAccountNumber() {
+        return accountNumber;
+    }
 
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 
-    
 }
