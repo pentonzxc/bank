@@ -3,7 +3,6 @@ package clevertec.transaction.check;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import clevertec.transaction.ActionDirection;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
