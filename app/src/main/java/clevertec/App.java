@@ -5,6 +5,7 @@ package clevertec;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import javax.swing.plaf.synth.SynthStyle;
+
 import org.checkerframework.checker.units.qual.degrees;
 
 import clevertec.account_interest.scheduler.InterestChecker;
@@ -21,25 +24,32 @@ import clevertec.account_interest.scheduler.InterestCheckerFactory;
 import clevertec.transaction.ActionType;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.TransactionAction;
+import clevertec.transaction.check.ActionDescription;
+import clevertec.transaction.check.TransactionCheck;
+import clevertec.transaction.check.TransactionPrinter;
 import clevertec.util.*;
 
 public class App {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
-        InterestChecker checker = InterestCheckerFactory.aInterestChecker();
-        checker.run();
+        // InterestChecker checker = InterestCheckerFactory.aInterestChecker();
+        // checker.run();
 
-        checker.stop();
-        System.out.println("hello");
+        // checker.stop();
+        // System.out.println("hello");
 
-        // Runnable inf = () -> {
-        // while (true) {
-        // }
-        // };
 
-        // CompletableFuture.
+        TransactionCheck c = new TransactionCheck();
+        c.setDateTime(LocalDateTime.now());
+        c.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
+        c.setId("123");
+        c.setOriginBank("Bank1");
+        c.setTargetBank("Bank2");
+        c.setOriginAccountNumber("123");
+        c.setTargetAccountNumber("1234");
+        c.setMoney(100);
 
-        // Executors.newFixedThreadPool(2).submit(inf);
+        System.out.println(new TransactionPrinter().text(c));
     }
 
     static public void exampleFlow() {

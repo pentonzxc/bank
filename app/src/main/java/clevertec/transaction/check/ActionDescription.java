@@ -11,4 +11,8 @@ public enum ActionDescription {
         this.description = description;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
 }
