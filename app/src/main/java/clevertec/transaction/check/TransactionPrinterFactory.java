@@ -72,7 +72,7 @@ public class TransactionPrinterFactory {
                 newLineInPlace(result);
 
                 Function<Double, String> f1 = money -> String.format("%.2f", money).concat(" ").concat("BYN");
-                result = generateRow(result, TransferAmountLabel, check.getMoney(), f1);
+                result = generateRow(result, TransferAmountLabel, check.getTransferAmount(), f1);
                 newLineInPlace(result);
 
                 result = result.deleteCharAt(result.length() - 1);

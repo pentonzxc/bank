@@ -5,39 +5,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Account {
 
-    Integer id;
+    private Integer id;
 
-    double money = 0d;
+    private double money = 0d;
 
-    Bank bank;
+    private Bank bank;
 
-    User user;
+    private User user;
 
-    String accountNumber = "1";
+    private String accountNumber = "1";
 
     private final Object lock = new Object();
-
-    public Account(User user) {
-        this.user = user;
-    }
-
-    // public?
-    /* private */ public Account(User user, Bank bank, double money) {
-        this(user, bank);
-        this.money = money;
-    }
-
-    
-
-    public Account(double money) {
-        this.money = money;
-    }
-
-    public Account(User user, Bank bank) {
-        this(user);
-        this.bank = bank;
-        bank.addAccount(this);
-    }
 
     public double addMoney(double money) {
         this.money += money;
@@ -50,7 +28,7 @@ public class Account {
     }
 
     public Double subMoney(double money) {
-        if (this.money <= money) {
+        if (this.money < money) {
             return -1d;
         }
         this.money -= money;
@@ -107,6 +85,18 @@ public class Account {
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    
+    public Account softCopy() {
+        Account copy = new Account();
+        copy.setId(id);
+        copy.setBank(bank);
+        copy.setAccountNumber(accountNumber);
+        copy.setUser(user);
+        copy.setMoney(money);
+
+        return copy;
     }
 
 }

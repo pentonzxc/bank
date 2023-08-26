@@ -137,7 +137,7 @@ public class InterestCheckerTest {
     private double sumMoneyOfAllAccountsInBanks(List<Bank> banks) {
         double[] sum = new double[] { 0d };
 
-        banks.forEach(b -> b.accounts.forEach(a -> sum[0] += a.money));
+        banks.forEach(b -> b.accounts.forEach(a -> sum[0] += a.getMoney()));
 
         return sum[0];
     }

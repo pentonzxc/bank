@@ -43,7 +43,7 @@ public class StringTransactionPrinterTest {
         check.setTargetBank("Bank2");
         check.setOriginAccountNumber("123");
         check.setTargetAccountNumber("1234");
-        check.setMoney(100);
+        check.setTransferAmount(100);
 
         assertEquals(expected, printer.view(check));
     }
@@ -80,7 +80,7 @@ public class StringTransactionPrinterTest {
         check.setId("123");
         check.setOriginBank("Bank1");
         check.setOriginAccountNumber("123");
-        check.setMoney(100);
+        check.setTransferAmount(100);
 
         assertEquals(expected, printer.view(check));
     }

@@ -21,7 +21,7 @@ class TransactionHelper {
                 check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
             } else if (direction == ActionDirection.ACCOUNT_TRANSFER && type == ActionType.SUB) {
                 check.setDescription(ActionDescription.ACCOUNT_TRANSFER_SUB);
-            } else if (direction == ActionDirection.ACCOUNT_TRANSFER) {
+            } else if (direction == ActionDirection.ACCOUNT_ACCOUNT_TRANSFER) {
                 check.setDescription(ActionDescription.ACCOUNT_ACCOUNT_TRANSFER);
             } else {
                 log.debug("TransactionHelper resolveMoneyDirectionInPlace receive illegal ActionDirection :: "

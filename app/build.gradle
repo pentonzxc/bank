@@ -22,6 +22,8 @@ repositories {
 dependencies {
     // Use JUnit test framework.u
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+
 
 
     compileOnly 'org.projectlombok:lombok:1.18.28'

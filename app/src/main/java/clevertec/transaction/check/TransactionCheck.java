@@ -14,7 +14,7 @@ public class TransactionCheck {
     private String originAccountNumber;
     private Optional<String> targetBank = Optional.empty();
     private Optional<String> targetAccountNumber = Optional.empty();
-    private double money;
+    private double transferAmount;
 
     public String getId() {
         return id;
@@ -64,12 +64,12 @@ public class TransactionCheck {
         this.targetAccountNumber = Optional.of(targetAccountNumber);
     }
 
-    public double getMoney() {
-        return money;
+    public double getTransferAmount() {
+        return transferAmount;
     }
 
-    public void setMoney(double money) {
-        this.money = money;
+    public void setTransferAmount(double money) {
+        this.transferAmount = money;
     }
 
     public ActionDescription getDescription() {

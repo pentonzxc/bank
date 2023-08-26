@@ -4,46 +4,47 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+
+import com.google.common.base.Optional;
 
 import clevertec.Account;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.util.*;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Data
 @Slf4j
 public class Transaction {
-    String id;
+    private String id;
 
-    Account origin;
+    private Account main;
 
-    Account target;
+    private Account aux;
 
-    public Transaction(Account origin) {
+    public Transaction(@NonNull Account origin) {
         this(origin, null);
     }
 
-    public Transaction(Account origin, Account target) {
-        this.origin = origin;
-        this.target = target;
+    public Transaction(@NonNull Account main, Account aux) {
+        this.main = main;
+        this.aux = aux;
 
     }
 
-    public List<TransactionCheck> beginTransaction(TransactionAction... actions) {
+    public List<TransactionCheck> beginTransaction(TransactionAction... actions) throws TransactionException {
 
         List<TransactionCheck> checks = null;
 
         try {
-            if (target == null) {
-                synchronized (origin.getLock()) {
+            if (aux == null) {
+                synchronized (main.getLock()) {
                     processTransaction(actions);
                 }
             } else {
-                Object lock1 = target.getId() < origin.getId() ? origin.getLock() : target.getLock();
-                Object lock2 = target.getId() < origin.getId() ? target.getLock() : origin.getLock();
+                Object lock1 = aux.getId() < main.getId() ? main.getLock() : aux.getLock();
+                Object lock2 = aux.getId() < main.getId() ? aux.getLock() : main.getLock();
                 synchronized (lock1) {
                     synchronized (lock2) {
                         checks = processTransaction(actions);
@@ -53,6 +54,7 @@ public class Transaction {
         } catch (TransactionException ex) {
             // FIXME handle:
             log.error("Transaction exception", ex);
+            throw ex;
         }
 
         return checks;
@@ -61,10 +63,17 @@ public class Transaction {
 
     // TODO maybe add rollback:
     private List<TransactionCheck> processTransaction(TransactionAction[] actions) throws TransactionException {
-        Account copyOrigin = new Account(origin.getMoney());
-        Account copyTarget = target != null ? new Account(target.getMoney()) : null;
+        Account copyMain = main.softCopy();
+        Account copyAux = null;
+        if (main == aux) {
+            copyAux = copyMain;
+        }
 
-        Pair<List<TransactionCheck>, Boolean> result = doTranscationActions(actions, copyOrigin, copyTarget);
+        else if (aux != null) {
+            copyAux = aux.softCopy();
+        }
+
+        Pair<List<TransactionCheck>, Boolean> result = doTranscationActions(actions, copyMain, copyAux);
 
         List<TransactionCheck> checks = result.first();
 
@@ -75,9 +84,9 @@ public class Transaction {
             throw new TransactionException();
         }
 
-        origin.setMoney(copyOrigin.getMoney());
-        if (copyTarget != null)
-            target.setMoney(copyTarget.getMoney());
+        main.setMoney(copyMain.getMoney());
+        if (copyAux != null)
+            aux.setMoney(copyAux.getMoney());
         // log success
 
         return checks;
@@ -85,8 +94,8 @@ public class Transaction {
 
     private Pair<List<TransactionCheck>, Boolean> doTranscationActions(
             TransactionAction[] actions,
-            Account origin,
-            Account target) {
+            Account main,
+            Account aux) {
         List<TransactionCheck> transactionChecks = new ArrayList<>();
 
         for (var action : actions) {
@@ -96,35 +105,35 @@ public class Transaction {
             double change = action.getChange();
             double success = 0;
 
-            if (target == null) {
+            if (aux == null) {
                 if (actionType == ActionType.ADD) {
-                    origin.addMoney(change);
+                    main.addMoney(change);
                 } else {
-                    success = origin.subMoney(change);
+                    success = main.subMoney(change);
                 }
 
                 actionDirection = ActionDirection.ACCOUNT_TRANSFER;
             } else {
                 // TODO: some misunderstanding
                 if (actionType == ActionType.ADD) {
-                    success = target.transfer(origin, change);
+                    success = aux.transfer(main, change);
                 } else {
-                    success = origin.transfer(target, change);
+                    success = main.transfer(aux, change);
                 }
 
                 actionDirection = ActionDirection.ACCOUNT_ACCOUNT_TRANSFER;
             }
 
             transactionCheck.setDateTime(LocalDateTime.now(ZoneId.systemDefault()));
-            transactionCheck.setMoney(change);
+            transactionCheck.setTransferAmount(change);
             TransactionHelper.Check.resolveAndSetActionDescriptionInPlace(transactionCheck, actionType,
                     actionDirection);
             TransactionHelper.Check.resolveAndSetOriginAndTargetInPlace(
                     transactionCheck,
                     transactionCheck.getDescription(),
                     actionType,
-                    origin,
-                    target);
+                    main,
+                    aux);
             transactionChecks.add(transactionCheck);
 
             if (success == -1) {
@@ -135,4 +144,17 @@ public class Transaction {
 
         return new Pair<List<TransactionCheck>, Boolean>(transactionChecks, true);
     }
+
+    public static Transaction between(Account main, Account aux) {
+        return new Transaction(main, aux);
+    }
+
+    public Account getMain() {
+        return main;
+    }
+
+    public Optional<Account> getAux() {
+        return Optional.fromNullable(aux);
+    }
+
 }

@@ -14,5 +14,10 @@ public class TransactionAction {
     public ActionType getType() {
         return action;
     }
+
+
+    static public TransactionAction from(ActionType action, double change){
+        return new TransactionAction(action , change);
+    }
 }
     

@@ -6,8 +6,9 @@
 # custom
 # ignore binary code
 app/bin
-# some ref for dev purp :)
+# some txt for local env :)
 ref.txt
+tips.txt
 # python person txt generator
 # random_person_generator.py
 # persons.txt

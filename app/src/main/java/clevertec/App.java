@@ -25,8 +25,14 @@ public class App {
         var bank = new Bank("example");
         var user1 = new User("Kolya", "Urusov", "1990-02-23");
         var user2 = new User("Pasha", "Urusov", "1990-02-23");
-        var account1 = new Account(user1, bank, 100);
-        var account2 = new Account(user2, bank, 20);
+        var account1 = new Account();
+        account1.setUser(user1);
+        account1.setBank(bank);
+        account1.setMoney(100);
+        var account2 = new Account();
+        account2.setUser(user2);
+        account2.setBank(bank);
+        account2.setMoney(100);
 
         Transaction transaction = new Transaction(account1);
         System.out.println("Before 1:: " + account1.getMoney());
@@ -34,12 +40,16 @@ public class App {
 
         Transaction transaction2 = new Transaction(account2, account1);
 
-        transaction.beginTransaction(
-                new TransactionAction(ActionType.ADD, 10),
-                new TransactionAction(ActionType.SUB, 5));
-        transaction2.beginTransaction(
-                new TransactionAction(ActionType.ADD, 15),
-                new TransactionAction(ActionType.SUB, 5));
+        try {
+            transaction.beginTransaction(
+                    new TransactionAction(ActionType.ADD, 10),
+                    new TransactionAction(ActionType.SUB, 5));
+            transaction2.beginTransaction(
+                    new TransactionAction(ActionType.ADD, 15),
+                    new TransactionAction(ActionType.SUB, 5));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         System.out.println("After1 :: " + account1.getMoney());
         System.out.println("After2 :: " + account2.getMoney());
@@ -55,7 +65,7 @@ public class App {
         c.setTargetBank("Bank2");
         c.setOriginAccountNumber("123");
         c.setTargetAccountNumber("1234");
-        c.setMoney(100);
+        c.setTransferAmount(100);
 
         return TransactionPrinterFactory.stringPrinter().view(c);
     }
