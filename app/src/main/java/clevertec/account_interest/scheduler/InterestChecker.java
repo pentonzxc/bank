@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 import clevertec.Account;
 import clevertec.Bank;
+import clevertec.config.Config;
 import clevertec.util.DateUtil;
 
 import java.util.concurrent.CompletableFuture;
@@ -18,15 +19,19 @@ import java.util.concurrent.Executors;
 
 public class InterestChecker {
 
-    private double interest = 1;
+    private final double INTEREST_PERCENT = Config.getProperty("INTEREST_PERCENT", Double::parseDouble);
+    private final long INTEREST_CHECK_TIME_DELAY = Config.getProperty("INTEREST_CHECK_TIME_DELAY", Long::parseLong);
+    private final long INTEREST_FIRST_CHECK_DELAY = Config.getProperty("INTEREST_FIRST_CHECK_DELAY", Long::parseLong);
+    private final long RESUME_WORK_DELAY = 1000 * 60 * 60 * 24;
+
+    volatile private boolean working = true;
+
+    protected final ScheduledThreadPoolExecutor threadPool;
 
     private ScheduledFuture<Void> interestTask;
 
     private Supplier<List<Bank>> bankStorage;
 
-    final protected ScheduledThreadPoolExecutor threadPool;
-
-    volatile private boolean WORK_PERIOD = true;
 
     protected InterestChecker(int threadsCount, boolean daemon) {
         if (daemon) {
@@ -41,8 +46,11 @@ public class InterestChecker {
     @SuppressWarnings("unchecked")
     public ScheduledFuture<Void> run() {
         if ((interestTask != null && interestTask.isCancelled()) || interestTask == null) {
-            interestTask = (ScheduledFuture<Void>) threadPool.scheduleWithFixedDelay(this::checkInterest, 10, 30,
-                    TimeUnit.SECONDS);
+            interestTask = (ScheduledFuture<Void>) threadPool.scheduleWithFixedDelay(
+                    this::checkInterest,
+                    INTEREST_FIRST_CHECK_DELAY,
+                    INTEREST_CHECK_TIME_DELAY,
+                    TimeUnit.MILLISECONDS);
         }
         return interestTask;
     }
@@ -63,32 +71,34 @@ public class InterestChecker {
     }
 
     // TODO: can make it a bit faster
-    // instead of simple synhronized with for blocking if current lock was taken (just replace Object lock on Lock lock)
+    // instead of simple synhronized with for blocking if current lock was taken
+    // (just replace Object lock on Lock lock)
     // instead of List we have Queue of accounts
-    // pop from Queue, can use Lock with timeout 1 second, if TimeoutException then enqueue back in Queue
+    // pop from Queue, can use Lock with timeout 1 second, if TimeoutException then
+    // enqueue back in Queue
     // else enqueue the next elem from Queue
     private void checkInterest() {
-        System.out.println(WORK_PERIOD && isTodayLastDayOfMonth());
+        System.out.println(working && isTodayLastDayOfMonth());
         try {
-            if (WORK_PERIOD && isTodayLastDayOfMonth()) {
+            if (working && isTodayLastDayOfMonth()) {
                 List<Bank> banks = bankStorage.get();
                 for (Bank bank : banks) {
                     for (Account account : bank.getAccounts()) {
                         synchronized (account.getLock()) {
-                            account.addPercent(interest);
+                            account.addPercent(INTEREST_PERCENT);
                         }
                     }
                 }
-                threadPool.schedule(this::resumeCheckInterestInDay, 1, TimeUnit.DAYS);
-                WORK_PERIOD = false;
+                threadPool.schedule(this::resumeCheckInterest, RESUME_WORK_DELAY, TimeUnit.MILLISECONDS);
+                working = false;
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void resumeCheckInterestInDay() {
-        WORK_PERIOD = true;
+    private void resumeCheckInterest() {
+        working = true;
     }
 
     protected boolean isTodayLastDayOfMonth() {

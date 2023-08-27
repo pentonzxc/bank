@@ -10,8 +10,6 @@ import clevertec.Account;
 import clevertec.Bank;
 import clevertec.transaction.check.ActionDescription;
 import clevertec.transaction.check.TransactionCheck;
-import clevertec.util.Pair;
-import net.bytebuddy.asm.Advice.Argument;
 
 public class TransactionCheckProvider implements ArgumentsProvider {
 
