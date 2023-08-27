@@ -42,11 +42,9 @@ public class App {
 
         try {
             transaction.beginTransaction(
-                    new TransactionAction(ActionType.ADD, 10),
                     new TransactionAction(ActionType.SUB, 5));
             transaction2.beginTransaction(
-                    new TransactionAction(ActionType.ADD, 15),
-                    new TransactionAction(ActionType.SUB, 5));
+                    new TransactionAction(ActionType.ADD, 15));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

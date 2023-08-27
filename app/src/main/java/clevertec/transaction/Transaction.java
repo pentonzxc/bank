@@ -33,21 +33,21 @@ public class Transaction {
 
     }
 
-    public List<TransactionCheck> beginTransaction(TransactionAction... actions) throws TransactionException {
+    public TransactionCheck beginTransaction(TransactionAction action) throws TransactionException {
 
-        List<TransactionCheck> checks = null;
+        TransactionCheck check = null;
 
         try {
             if (aux == null) {
                 synchronized (main.getLock()) {
-                    checks = processTransaction(actions);
+                    check = processTransaction(action);
                 }
             } else {
                 Object lock1 = aux.getId() < main.getId() ? main.getLock() : aux.getLock();
                 Object lock2 = aux.getId() < main.getId() ? aux.getLock() : main.getLock();
                 synchronized (lock1) {
                     synchronized (lock2) {
-                        checks = processTransaction(actions);
+                        check = processTransaction(action);
                     }
                 }
             }
@@ -57,12 +57,12 @@ public class Transaction {
             throw ex;
         }
 
-        return checks;
+        return check;
         // handle transaction
     }
 
     // TODO maybe add rollback:
-    private List<TransactionCheck> processTransaction(TransactionAction[] actions) throws TransactionException {
+    private TransactionCheck processTransaction(TransactionAction action) throws TransactionException {
         Account copyMain = main.softCopy();
         Account copyAux = null;
         if (main == aux) {
@@ -73,13 +73,13 @@ public class Transaction {
             copyAux = aux.softCopy();
         }
 
-        Pair<List<TransactionCheck>, Boolean> result = doTranscationActions(actions, copyMain, copyAux);
+        Pair<TransactionCheck, Boolean> result = doTranscationActions(action, copyMain, copyAux);
 
-        List<TransactionCheck> checks = result.first();
+        TransactionCheck check = result.first();
 
         if (!result.second()) {
             String failMessage = "Can't process transaction: Id :: {} ; CheckId :: {}";
-            log.debug(failMessage, this.id, checks.get(checks.size() - 1).getId());
+            log.debug(failMessage, this.id, check.getId());
             // FIXME add message:
             throw new TransactionException();
         }
@@ -89,64 +89,60 @@ public class Transaction {
             aux.setMoney(copyAux.getMoney());
         // log success
 
-        return checks;
+        return check;
     }
 
-    private Pair<List<TransactionCheck>, Boolean> doTranscationActions(
-            TransactionAction[] actions,
+    private Pair<TransactionCheck, Boolean> doTranscationActions(
+            TransactionAction action,
             Account main,
             Account aux) {
-        List<TransactionCheck> transactionChecks = new ArrayList<>();
 
-        for (var action : actions) {
-            ActionType actionType = action.getType();
-            TransactionCheck transactionCheck = new TransactionCheck();
-            ActionDirection actionDirection = ActionDirection.NONE;
-            double change = action.getChange();
-            double success = 0;
+        TransactionCheck check = new TransactionCheck();
+        ActionType actionType = action.getType();
+        ActionDirection actionDirection = ActionDirection.NONE;
+        double change = action.getChange();
+        double success = 0;
 
-            if (aux == null) {
-                if (actionType == ActionType.ADD) {
-                    main.addMoney(change);
-                } else {
-                    success = main.subMoney(change);
-                }
-
-                actionDirection = ActionDirection.ACCOUNT_TRANSFER;
+        if (aux == null) {
+            if (actionType == ActionType.ADD) {
+                main.addMoney(change);
             } else {
-                // TODO: some misunderstanding
-                if (actionType == ActionType.ADD) {
-                    success = aux.transfer(main, change);
-                } else {
-                    success = main.transfer(aux, change);
-                }
-
-                actionDirection = ActionDirection.ACCOUNT_ACCOUNT_TRANSFER;
+                success = main.subMoney(change);
             }
 
-            transactionCheck.setDateTime(LocalDateTime.now(ZoneId.systemDefault()));
-            transactionCheck.setTransferAmount(change);
-            TransactionHelper.Check.resolveAndSetActionDescriptionInPlace(
-                    transactionCheck,
-                    actionType,
-                    actionDirection,
-                    main,
-                    aux);
-            TransactionHelper.Check.resolveAndSetOriginAndTargetInPlace(
-                    transactionCheck,
-                    transactionCheck.getDescription(),
-                    actionType,
-                    main,
-                    aux);
-            transactionChecks.add(transactionCheck);
-
-            if (success == -1) {
-                return new Pair<List<TransactionCheck>, Boolean>(transactionChecks, false);
+            actionDirection = ActionDirection.ACCOUNT_TRANSFER;
+        } else {
+            // TODO: some misunderstanding
+            if (actionType == ActionType.ADD) {
+                success = aux.transfer(main, change);
+            } else {
+                success = main.transfer(aux, change);
             }
 
+            actionDirection = ActionDirection.ACCOUNT_ACCOUNT_TRANSFER;
         }
 
-        return new Pair<List<TransactionCheck>, Boolean>(transactionChecks, true);
+        check.setDateTime(LocalDateTime.now(ZoneId.systemDefault()));
+        check.setTransferAmount(change);
+        TransactionHelper.Check.resolveAndSetActionDescriptionInPlace(
+                check,
+                actionType,
+                actionDirection,
+                main,
+                aux);
+        TransactionHelper.Check.resolveAndSetOriginAndTargetInPlace(
+                check,
+                check.getDescription(),
+                actionType,
+                main,
+                aux);
+
+        if (success == -1) {
+            return new Pair<TransactionCheck, Boolean>(check, false);
+        }
+
+        return new Pair<TransactionCheck, Boolean>(check, true);
+
     }
 
     public static Transaction between(Account main, Account aux) {

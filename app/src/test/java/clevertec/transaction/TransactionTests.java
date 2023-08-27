@@ -3,6 +3,7 @@ package clevertec.transaction;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -196,9 +197,9 @@ public class TransactionTests {
         try (MockedStatic<LocalDateTime> mockDateTime = Mockito.mockStatic(LocalDateTime.class)) {
             mockDateTime.when(() -> LocalDateTime.now(Mockito.any(ZoneId.class))).thenReturn(expectedDateTime);
 
-            List<TransactionCheck> checks = transaction.beginTransaction(transactionAction);
-            check_[0] = checks.get(0);
-            assertEquals(1, checks.size());
+            TransactionCheck check = transaction.beginTransaction(transactionAction);
+            check_[0] = check;
+            assertNotNull(check);
         }
 
         final TransactionCheck check = check_[0];
