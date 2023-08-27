@@ -13,13 +13,16 @@ class TransactionHelper {
     class Check {
         private Check() {
         }
+
         public static void resolveAndSetActionDescriptionInPlace(
                 TransactionCheck check,
                 ActionType type,
-                ActionDirection direction) {
-            if (direction == ActionDirection.ACCOUNT_TRANSFER && type == ActionType.ADD) {
+                ActionDirection direction,
+                Account main,
+                Account aux) {
+            if ((direction == ActionDirection.ACCOUNT_TRANSFER || main == aux) && type == ActionType.ADD) {
                 check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
-            } else if (direction == ActionDirection.ACCOUNT_TRANSFER && type == ActionType.SUB) {
+            } else if ((direction == ActionDirection.ACCOUNT_TRANSFER || main == aux) && type == ActionType.SUB) {
                 check.setDescription(ActionDescription.ACCOUNT_TRANSFER_SUB);
             } else if (direction == ActionDirection.ACCOUNT_ACCOUNT_TRANSFER) {
                 check.setDescription(ActionDescription.ACCOUNT_ACCOUNT_TRANSFER);
@@ -33,22 +36,24 @@ class TransactionHelper {
                 TransactionCheck check,
                 ActionDescription description,
                 ActionType type,
-                Account origin,
-                Account target) {
+                Account main,
+                Account aux) {
             if (description == ActionDescription.ACCOUNT_TRANSFER_ADD
                     || description == ActionDescription.ACCOUNT_TRANSFER_SUB) {
-                check.setOriginAccountNumber(origin.getAccountNumber());
-                check.setOriginBank(origin.getBank().getName());
+                check.setOriginAccountNumber(main.getAccountNumber());
+                check.setOriginBank(main.getBank().getName());
+                check.setTargetAccountNumber(main.getAccountNumber());
+                check.setTargetBank(main.getBank().getName());
             } else if (description == ActionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.ADD) {
-                check.setOriginAccountNumber(target.getAccountNumber());
-                check.setOriginBank(target.getBank().getName());
-                check.setTargetAccountNumber(origin.getAccountNumber());
-                check.setTargetBank(origin.getBank().getName());
+                check.setOriginAccountNumber(aux.getAccountNumber());
+                check.setOriginBank(aux.getBank().getName());
+                check.setTargetAccountNumber(main.getAccountNumber());
+                check.setTargetBank(main.getBank().getName());
             } else if (description == ActionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.SUB) {
-                check.setOriginAccountNumber(origin.getAccountNumber());
-                check.setOriginBank(origin.getBank().getName());
-                check.setTargetAccountNumber(target.getAccountNumber());
-                check.setTargetBank(target.getBank().getName());
+                check.setOriginAccountNumber(main.getAccountNumber());
+                check.setOriginBank(main.getBank().getName());
+                check.setTargetAccountNumber(aux.getAccountNumber());
+                check.setTargetBank(aux.getBank().getName());
             }
         }
     }

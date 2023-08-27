@@ -40,7 +40,7 @@ public class Transaction {
         try {
             if (aux == null) {
                 synchronized (main.getLock()) {
-                    processTransaction(actions);
+                    checks = processTransaction(actions);
                 }
             } else {
                 Object lock1 = aux.getId() < main.getId() ? main.getLock() : aux.getLock();
@@ -126,8 +126,12 @@ public class Transaction {
 
             transactionCheck.setDateTime(LocalDateTime.now(ZoneId.systemDefault()));
             transactionCheck.setTransferAmount(change);
-            TransactionHelper.Check.resolveAndSetActionDescriptionInPlace(transactionCheck, actionType,
-                    actionDirection);
+            TransactionHelper.Check.resolveAndSetActionDescriptionInPlace(
+                    transactionCheck,
+                    actionType,
+                    actionDirection,
+                    main,
+                    aux);
             TransactionHelper.Check.resolveAndSetOriginAndTargetInPlace(
                     transactionCheck,
                     transactionCheck.getDescription(),
