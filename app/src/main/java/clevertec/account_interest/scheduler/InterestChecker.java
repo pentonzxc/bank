@@ -22,8 +22,6 @@ public class InterestChecker {
 
     private ScheduledFuture<Void> interestTask;
 
-    // private ScheduledFuture<?> resumeInterestTask;
-
     private Supplier<List<Bank>> bankStorage;
 
     final protected ScheduledThreadPoolExecutor threadPool;
@@ -46,8 +44,6 @@ public class InterestChecker {
             interestTask = (ScheduledFuture<Void>) threadPool.scheduleWithFixedDelay(this::checkInterest, 10, 30,
                     TimeUnit.SECONDS);
         }
-        // System.out.println("Active count :: " + threadPool.getActiveCount());
-        // System.out.println("Size of queue :: " + threadPool.getQueue().size());
         return interestTask;
     }
 
@@ -66,25 +62,23 @@ public class InterestChecker {
         return new InterestChecker(threadsCount, daemon);
     }
 
+    // TODO: can make it a bit faster
+    // instead of simple synhronized with for blocking if current lock was taken (just replace Object lock on Lock lock)
+    // instead of List we have Queue of accounts
+    // pop from Queue, can use Lock with timeout 1 second, if TimeoutException then enqueue back in Queue
+    // else enqueue the next elem from Queue
     private void checkInterest() {
-        // System.out.println("in check interest");
         System.out.println(WORK_PERIOD && isTodayLastDayOfMonth());
         try {
             if (WORK_PERIOD && isTodayLastDayOfMonth()) {
-
                 List<Bank> banks = bankStorage.get();
                 for (Bank bank : banks) {
-                    // System.out.println("in banks");
                     for (Account account : bank.getAccounts()) {
                         synchronized (account.getLock()) {
-                            // System.out.println("add");
                             account.addPercent(interest);
                         }
                     }
                 }
-
-                // resumeInterestTask = threadPool.schedule(this::resumeCheckInterestInDay, 1,
-                // TimeUnit.DAYS);
                 threadPool.schedule(this::resumeCheckInterestInDay, 1, TimeUnit.DAYS);
                 WORK_PERIOD = false;
             }
@@ -94,9 +88,6 @@ public class InterestChecker {
     }
 
     private void resumeCheckInterestInDay() {
-        // if (!resumeInterestTask.isCancelled()) {
-        // resumeInterestTask.cancel(true);
-        // }
         WORK_PERIOD = true;
     }
 
