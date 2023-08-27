@@ -1,5 +1,6 @@
 package clevertec;
 
+import static clevertec.util.MoneyUtil.roundMoney;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -18,12 +19,12 @@ public class Account {
     private final Object lock = new Object();
 
     public double addMoney(double money) {
-        this.money += money;
+        this.money = roundMoney(this.money + money);
         return this.money;
     }
 
     public double addPercent(double percent) {
-        money = money * (1 + percent / 100);
+        money = roundMoney(money * (1 + percent / 100));
         return money;
     }
 
@@ -31,7 +32,7 @@ public class Account {
         if (this.money < money) {
             return -1d;
         }
-        this.money -= money;
+        this.money = roundMoney(this.money - money);
         return this.money;
     }
 
@@ -56,7 +57,7 @@ public class Account {
     }
 
     public void setMoney(double money) {
-        this.money = money;
+        this.money = roundMoney(money);
     }
 
     public Bank getBank() {
@@ -87,7 +88,6 @@ public class Account {
         this.accountNumber = accountNumber;
     }
 
-    
     public Account softCopy() {
         Account copy = new Account();
         copy.setId(id);

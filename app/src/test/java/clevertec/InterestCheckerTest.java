@@ -1,5 +1,6 @@
 package clevertec;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,6 +16,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import clevertec.config.Config;
+import clevertec.util.MoneyUtil;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("unchecked")
@@ -91,7 +95,7 @@ public class InterestCheckerTest {
         Thread.sleep(30000);
         double sumAfter = sumMoneyOfAllAccountsInBanks(banks);
         checker = checker.newInstance();
-        
+
         assertTrue(sumBefore == sumAfter);
 
     }
@@ -100,6 +104,8 @@ public class InterestCheckerTest {
     void whenLastDayInMonth_expectMoreMoneyOnAccounts() throws InterruptedException {
         List<Bank> banks = (List<Bank>) FindAllService.allEntities()[1];
         double sumBefore = sumMoneyOfAllAccountsInBanks(banks);
+        Double expectedSum = MoneyUtil
+                .roundMoney(sumBefore * (1 + Config.getProperty("INTEREST_PERCENT", Double::parseDouble) / 100));
 
         checker.setBankStorage(() -> banks);
         checker.setMockDate(true);
@@ -110,7 +116,7 @@ public class InterestCheckerTest {
         checker = checker.newInstance();
 
         assertTrue(sumAfter > sumBefore || (sumAfter == sumBefore && sumBefore == 0));
-
+        assertEquals(expectedSum, sumAfter);
     }
 
     @Test
@@ -139,7 +145,7 @@ public class InterestCheckerTest {
 
         banks.forEach(b -> b.accounts.forEach(a -> sum[0] += a.getMoney()));
 
-        return sum[0];
+        return MoneyUtil.roundMoney(sum[0]);
     }
 
 }
