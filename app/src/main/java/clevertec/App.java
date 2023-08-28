@@ -11,6 +11,8 @@ import clevertec.account_interest.scheduler.InterestCheckerFactory;
 import clevertec.transaction.ActionType;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.TransactionAction;
+import clevertec.transaction.TransactionException;
+import clevertec.transaction.TransactionRunner;
 import clevertec.transaction.check.ActionDescription;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionPrinterFactory;
@@ -18,7 +20,10 @@ import clevertec.transaction.check.TransactionPrinterFactory;
 public class App {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
-        System.out.println("Hello World!");
+        // exampleFlow();
+        exampleFlow();
+        System.out.println("DEPRECATED");
+        deprecatedExampleFlow();
     }
 
     static public void exampleFlow() {
@@ -33,6 +38,43 @@ public class App {
         account2.setUser(user2);
         account2.setBank(bank);
         account2.setMoney(100);
+        account1.setId(1);
+        account2.setId(2);
+
+        Transaction transaction = new Transaction(account1);
+        System.out.println("Before 1:: " + account1.getMoney());
+        System.out.println("Before 2:: " + account2.getMoney());
+
+        Transaction transaction2 = new Transaction(account2, account1);
+
+        try {
+            TransactionRunner runner1 = transaction.begin();
+            runner1.run(new TransactionAction(ActionType.SUB, 5));
+            TransactionRunner runner2 = transaction2.begin();
+            runner2.run(new TransactionAction(ActionType.ADD, 15));
+        } catch (TransactionException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("After1 :: " + account1.getMoney());
+        System.out.println("After2 :: " + account2.getMoney());
+    }
+
+    static public void deprecatedExampleFlow() {
+        var bank = new Bank("example");
+        var user1 = new User("Kolya", "Urusov", "1990-02-23");
+        var user2 = new User("Pasha", "Urusov", "1990-02-23");
+        var account1 = new Account();
+
+        account1.setUser(user1);
+        account1.setBank(bank);
+        account1.setMoney(100);
+        var account2 = new Account();
+        account2.setUser(user2);
+        account2.setBank(bank);
+        account2.setMoney(100);
+        account1.setId(1);
+        account2.setId(2);
 
         Transaction transaction = new Transaction(account1);
         System.out.println("Before 1:: " + account1.getMoney());

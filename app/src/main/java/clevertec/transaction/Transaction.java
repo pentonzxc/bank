@@ -2,19 +2,18 @@ package clevertec.transaction;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.google.common.base.Optional;
 
 import clevertec.Account;
 import clevertec.transaction.check.TransactionCheck;
-import clevertec.util.*;
-import lombok.Data;
+import clevertec.util.Pair;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-@Data
+// @Data
 @Slf4j
 public class Transaction {
     private String id;
@@ -30,9 +29,53 @@ public class Transaction {
     public Transaction(@NonNull Account main, Account aux) {
         this.main = main;
         this.aux = aux;
-
     }
 
+    private Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> onFailureRollback = f -> {
+        Account copyMain = main.softCopy();
+        Account copyAux = null;
+        TransactionCheck check = null;
+
+        if (main == aux) {
+            copyAux = copyMain;
+        } else if (aux != null) {
+            copyAux = aux.softCopy();
+        }
+
+        check = f.apply(copyMain, copyAux);
+
+        main.setMoney(copyMain.getMoney());
+        if (copyAux != null) {
+            aux.setMoney(copyAux.getMoney());
+        }
+
+        return check;
+    };
+
+    private Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction = f -> {
+        TransactionCheck check = null;
+        if (aux == null) {
+            synchronized (main.getLock()) {
+                check = onFailureRollback.apply(f);
+            }
+        } else {
+            Object lock1 = aux.getId() < main.getId() ? main.getLock() : aux.getLock();
+            Object lock2 = aux.getId() < main.getId() ? aux.getLock() : main.getLock();
+            synchronized (lock1) {
+                synchronized (lock2) {
+                    check = onFailureRollback.apply(f);
+                }
+            }
+        }
+
+        return check;
+    };
+
+    public TransactionRunner begin() {
+        return new TransactionRunner(transaction);
+    }
+
+    @Deprecated(since = "feature/refactor_transaction")
     public TransactionCheck beginTransaction(TransactionAction action) throws TransactionException {
 
         TransactionCheck check = null;
@@ -61,6 +104,7 @@ public class Transaction {
         // handle transaction
     }
 
+    @Deprecated(since = "feature/refactor_transaction")
     // TODO maybe add rollback:
     private TransactionCheck processTransaction(TransactionAction action) throws TransactionException {
         Account copyMain = main.softCopy();
@@ -78,8 +122,8 @@ public class Transaction {
         TransactionCheck check = result.first();
 
         if (!result.second()) {
-            String failMessage = "Can't process transaction: Id :: {} ; CheckId :: {}";
-            log.debug(failMessage, this.id, check.getId());
+            // String failMessage = "Can't process transaction: Id :: {} ; CheckId :: {}";
+            // log.debug(failMessage, this.id, check.getId());
             // FIXME add message:
             throw new TransactionException();
         }
@@ -92,11 +136,11 @@ public class Transaction {
         return check;
     }
 
+    @Deprecated(since = "feature/refactor_transaction")
     private Pair<TransactionCheck, Boolean> doTranscationActions(
             TransactionAction action,
             Account main,
             Account aux) {
-
         TransactionCheck check = new TransactionCheck();
         ActionType actionType = action.getType();
         ActionDirection actionDirection = ActionDirection.NONE;
@@ -142,10 +186,9 @@ public class Transaction {
         }
 
         return new Pair<TransactionCheck, Boolean>(check, true);
-
     }
 
-    public static Transaction between(Account main, Account aux) {
+    public static Transaction between(@NonNull Account main, Account aux) {
         return new Transaction(main, aux);
     }
 
@@ -156,5 +199,4 @@ public class Transaction {
     public Optional<Account> getAux() {
         return Optional.fromNullable(aux);
     }
-
 }
