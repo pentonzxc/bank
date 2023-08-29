@@ -46,6 +46,9 @@ public class InterestCheckerTest {
         }
     }
 
+    /**
+     * @throws InterruptedException
+     */
     @Test
     public void whenInterestRun_thenRunAgain_expectIgnoreNewRunCalls() throws InterruptedException {
         ScheduledFuture<Void> task1 = checker.run();
@@ -143,7 +146,7 @@ public class InterestCheckerTest {
     private double sumMoneyOfAllAccountsInBanks(List<Bank> banks) {
         double[] sum = new double[] { 0d };
 
-        banks.forEach(b -> b.accounts.forEach(a -> sum[0] += a.getMoney()));
+        banks.forEach(b -> b.accounts.forEach(a -> sum[0] += a.getBalance()));
 
         return MoneyUtil.roundMoney(sum[0]);
     }

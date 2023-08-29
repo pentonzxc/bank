@@ -13,6 +13,11 @@ import clevertec.transaction.check.TransactionCheck;
 
 public class TransactionCheckProvider implements ArgumentsProvider {
 
+    /**
+     * @param context
+     * @return Stream<? extends Arguments>
+     * @throws Exception
+     */
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
 
@@ -34,8 +39,8 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         acc1.setBank(new Bank("TEST1"));
         acc1.setId(1);
         acc2.setBank(new Bank("TEST2"));
-        acc1.setMoney(150);
-        acc2.setMoney(150);
+        acc1.setBalance(150);
+        acc2.setBalance(150);
         acc2.setId(2);
         acc1.setAccountNumber("TEST1N");
         acc2.setAccountNumber("TEST2N");
@@ -63,8 +68,8 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         acc1.setBank(new Bank("TEST1"));
         acc1.setId(1);
         acc2.setBank(new Bank("TEST2"));
-        acc1.setMoney(150);
-        acc2.setMoney(150);
+        acc1.setBalance(150);
+        acc2.setBalance(150);
         acc2.setId(2);
         acc1.setAccountNumber("TEST1N");
         acc2.setAccountNumber("TEST2N");
@@ -91,7 +96,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
 
         acc1.setBank(new Bank("TEST1"));
         acc1.setId(1);
-        acc1.setMoney(150);
+        acc1.setBalance(150);
         acc1.setAccountNumber("TEST1N");
 
         check.setOriginBank(acc1.getBank().getName());
@@ -116,7 +121,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
 
         acc1.setBank(new Bank("TEST1"));
         acc1.setId(1);
-        acc1.setMoney(150);
+        acc1.setBalance(150);
         acc1.setAccountNumber("TEST1N");
 
         check.setOriginBank(acc1.getBank().getName());
@@ -140,7 +145,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
 
         acc1.setBank(new Bank("TEST1"));
         acc1.setId(1);
-        acc1.setMoney(150);
+        acc1.setBalance(150);
         acc1.setAccountNumber("TEST1N");
 
         check.setOriginBank(acc1.getBank().getName());
@@ -164,7 +169,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
 
         acc1.setBank(new Bank("TEST1"));
         acc1.setId(1);
-        acc1.setMoney(150);
+        acc1.setBalance(150);
         acc1.setAccountNumber("TEST1N");
 
         check.setOriginBank(acc1.getBank().getName());

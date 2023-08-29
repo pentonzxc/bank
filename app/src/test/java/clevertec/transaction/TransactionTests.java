@@ -36,17 +36,17 @@ public class TransactionTests {
         void whenTranscationOver_expectMoneyOnAccountChange() throws TransactionException {
             Account acc1 = accounts.get(0);
             Account acc2 = accounts.get(1);
-            acc1.setMoney(100);
-            acc2.setMoney(100);
-            double unexpected1 = acc1.getMoney();
-            double unexpected2 = acc2.getMoney();
+            acc1.setBalance(100);
+            acc2.setBalance(100);
+            double unexpected1 = acc1.getBalance();
+            double unexpected2 = acc2.getBalance();
 
             Transaction t = new Transaction(acc1, acc2);
-            t.begin().run(TransactionAction.from(ActionType.SUB, 100));
+            t.begin().transfer(TransactionAction.from(ActionType.SUB, 100));
 
             assertAll(
-                    () -> assertNotEquals(unexpected1, acc1.getMoney()),
-                    () -> assertNotEquals(unexpected2, acc2.getMoney()));
+                    () -> assertNotEquals(unexpected1, acc1.getBalance()),
+                    () -> assertNotEquals(unexpected2, acc2.getBalance()));
         }
 
         @Test
@@ -55,28 +55,28 @@ public class TransactionTests {
             Account acc2 = accounts.get(1);
             Account acc3 = accounts.get(2);
 
-            acc1.setMoney(100);
-            acc2.setMoney(100);
-            acc3.setMoney(100);
-            double before1 = acc1.getMoney();
-            double before3 = acc3.getMoney();
+            acc1.setBalance(100);
+            acc2.setBalance(100);
+            acc3.setBalance(100);
+            double before1 = acc1.getBalance();
+            double before3 = acc3.getBalance();
             double expected1 = 0;
             double expected2 = 200;
             double expected3 = 90;
 
             Transaction t1 = new Transaction(acc1, acc2);
             Transaction t2 = new Transaction(acc3);
-            TransactionRunner runner1 = t1.begin();
-            TransactionRunner runner2 = t2.begin();
-            runner1.run(TransactionAction.from(ActionType.SUB, 100));
-            runner2.run(TransactionAction.from(ActionType.SUB, 10));
+            TransactionComputation runner1 = t1.begin();
+            TransactionComputation runner2 = t2.begin();
+            runner1.transfer(TransactionAction.from(ActionType.SUB, 100));
+            runner2.transfer(TransactionAction.from(ActionType.SUB, 10));
 
             assertAll(
-                    () -> assertTrue(before1 > acc1.getMoney()),
-                    () -> assertEquals(expected1, acc1.getMoney()),
-                    () -> assertTrue(before3 > acc3.getMoney()),
-                    () -> assertEquals(expected3, acc3.getMoney()),
-                    () -> assertEquals(expected2, acc2.getMoney()));
+                    () -> assertTrue(before1 > acc1.getBalance()),
+                    () -> assertEquals(expected1, acc1.getBalance()),
+                    () -> assertTrue(before3 > acc3.getBalance()),
+                    () -> assertEquals(expected3, acc3.getBalance()),
+                    () -> assertEquals(expected2, acc2.getBalance()));
         }
 
         @Test
@@ -85,109 +85,109 @@ public class TransactionTests {
             Account acc2 = accounts.get(1);
             Account acc3 = accounts.get(2);
 
-            acc1.setMoney(100);
-            acc2.setMoney(100);
-            acc3.setMoney(100);
-            double before1 = acc1.getMoney();
-            double before2 = acc2.getMoney();
-            double before3 = acc3.getMoney();
+            acc1.setBalance(100);
+            acc2.setBalance(100);
+            acc3.setBalance(100);
+            double before1 = acc1.getBalance();
+            double before2 = acc2.getBalance();
+            double before3 = acc3.getBalance();
             double expected1 = 110;
             double expected2 = 90;
             double expected3 = 110;
 
             Transaction t1 = new Transaction(acc1, acc2);
             Transaction t2 = new Transaction(acc3);
-            TransactionRunner runner1 = t1.begin();
-            TransactionRunner runner2 = t2.begin();
-            runner1.run(TransactionAction.from(ActionType.ADD, 10));
-            runner2.run(TransactionAction.from(ActionType.ADD, 10));
+            TransactionComputation runner1 = t1.begin();
+            TransactionComputation runner2 = t2.begin();
+            runner1.transfer(TransactionAction.from(ActionType.ADD, 10));
+            runner2.transfer(TransactionAction.from(ActionType.ADD, 10));
 
             assertAll(
-                    () -> assertTrue(before1 < acc1.getMoney()),
-                    () -> assertEquals(expected1, acc1.getMoney()),
-                    () -> assertTrue(before3 < acc3.getMoney()),
-                    () -> assertEquals(expected3, acc3.getMoney()),
-                    () -> assertEquals(expected2, acc2.getMoney()));
+                    () -> assertTrue(before1 < acc1.getBalance()),
+                    () -> assertEquals(expected1, acc1.getBalance()),
+                    () -> assertTrue(before3 < acc3.getBalance()),
+                    () -> assertEquals(expected3, acc3.getBalance()),
+                    () -> assertEquals(expected2, acc2.getBalance()));
         }
 
         @Test
         void whenActionAddNotEnoughMoneyToTransfer_expectTransactionException() {
             Account acc1 = accounts.get(0);
             Account acc2 = accounts.get(1);
-            acc1.setMoney(10);
-            acc2.setMoney(0);
+            acc1.setBalance(10);
+            acc2.setBalance(0);
 
-            double expected1 = acc1.getMoney();
-            double expected2 = acc2.getMoney();
+            double expected1 = acc1.getBalance();
+            double expected2 = acc2.getBalance();
 
             Transaction t1 = new Transaction(acc1, acc2);
-            TransactionRunner runner1 = t1.begin();
-            Executable f = () -> runner1.run(TransactionAction.from(ActionType.ADD, 10));
+            TransactionComputation runner1 = t1.begin();
+            Executable f = () -> runner1.transfer(TransactionAction.from(ActionType.ADD, 10));
             assertAll(
                     () -> assertThrowsExactly(TransactionException.class, f),
-                    () -> assertEquals(expected1, acc1.getMoney()),
-                    () -> assertEquals(expected2, acc2.getMoney()));
+                    () -> assertEquals(expected1, acc1.getBalance()),
+                    () -> assertEquals(expected2, acc2.getBalance()));
         }
 
         @Test
         void whenActionSubAndNotEnoughMoneyToTransfer_expectTransactionException() {
             Account acc1 = accounts.get(0);
             Account acc2 = accounts.get(1);
-            acc1.setMoney(0);
-            acc2.setMoney(10);
+            acc1.setBalance(0);
+            acc2.setBalance(10);
 
-            double expected1 = acc1.getMoney();
-            double expected2 = acc2.getMoney();
+            double expected1 = acc1.getBalance();
+            double expected2 = acc2.getBalance();
 
             Transaction t = new Transaction(acc1, acc2);
-            TransactionRunner runner = t.begin();
-            Executable f = () -> runner.run(TransactionAction.from(ActionType.SUB, 10));
+            TransactionComputation runner = t.begin();
+            Executable f = () -> runner.transfer(TransactionAction.from(ActionType.SUB, 10));
 
             assertAll(
                     () -> assertThrowsExactly(TransactionException.class, f),
-                    () -> assertEquals(expected1, acc1.getMoney()),
-                    () -> assertEquals(expected2, acc2.getMoney()));
+                    () -> assertEquals(expected1, acc1.getBalance()),
+                    () -> assertEquals(expected2, acc2.getBalance()));
         }
 
         @Test
         void whenWithdrawAndNotEnoughMoney_expectTransactionException() {
             Account acc1 = accounts.get(0);
-            acc1.setMoney(10);
+            acc1.setBalance(10);
 
             Transaction t = new Transaction(acc1);
-            TransactionRunner runner = t.begin();
-            Executable f = () -> runner.run(TransactionAction.from(ActionType.SUB, 20));
+            TransactionComputation runner = t.begin();
+            Executable f = () -> runner.transfer(TransactionAction.from(ActionType.SUB, 20));
             assertThrowsExactly(TransactionException.class, f);
         }
 
         @Test
         void whenTargetTheSameAsOriginAccount_expectMoneyChangeEqualZero() throws TransactionException {
             Account acc1 = accounts.get(0);
-            acc1.setMoney(10);
-            double before = acc1.getMoney();
+            acc1.setBalance(10);
+            double before = acc1.getBalance();
             double expected = before;
 
             Transaction t = new Transaction(acc1, acc1);
-            TransactionRunner runner = t.begin();
-            runner.run(TransactionAction.from(ActionType.SUB, 9));
+            TransactionComputation runner = t.begin();
+            runner.transfer(TransactionAction.from(ActionType.SUB, 9));
 
-            assertEquals(expected, acc1.getMoney());
+            assertEquals(expected, acc1.getBalance());
 
-            runner.run(TransactionAction.from(ActionType.ADD, 9));
+            runner.transfer(TransactionAction.from(ActionType.ADD, 9));
 
-            assertEquals(expected, acc1.getMoney());
+            assertEquals(expected, acc1.getBalance());
         }
 
         @Test
         void whenTargetTheSameAsOriginAccountAndNotEnoughMoney_expectTransactionException() {
             Account acc1 = accounts.get(0);
-            acc1.setMoney(10);
-            double before = acc1.getMoney();
+            acc1.setBalance(10);
+            double before = acc1.getBalance();
             double expected = before;
 
             Transaction t = new Transaction(acc1, acc1);
-            TransactionRunner runner = t.begin();
-            Executable f = () -> runner.run(TransactionAction.from(ActionType.SUB, 11));
+            TransactionComputation runner = t.begin();
+            Executable f = () -> runner.transfer(TransactionAction.from(ActionType.SUB, 11));
 
             assertAll(
                     () -> assertThrowsExactly(TransactionException.class, f),
@@ -206,7 +206,7 @@ public class TransactionTests {
             try (MockedStatic<LocalDateTime> mockDateTime = Mockito.mockStatic(LocalDateTime.class)) {
                 mockDateTime.when(() -> LocalDateTime.now(Mockito.any(ZoneId.class))).thenReturn(expectedDateTime);
 
-                TransactionCheck check = transaction.begin().run(transactionAction);
+                TransactionCheck check = transaction.begin().transfer(transactionAction);
                 check_[0] = check;
                 assertNotNull(check);
             }
@@ -231,18 +231,18 @@ public class TransactionTests {
         void whenTranscationOver_expectMoneyOnAccountChange() throws TransactionException {
             Account acc1 = accounts.get(0);
             Account acc2 = accounts.get(1);
-            acc1.setMoney(100);
-            acc2.setMoney(100);
-            double unexpected1 = acc1.getMoney();
-            double unexpected2 = acc2.getMoney();
+            acc1.setBalance(100);
+            acc2.setBalance(100);
+            double unexpected1 = acc1.getBalance();
+            double unexpected2 = acc2.getBalance();
 
             Transaction t = new Transaction(acc1, acc2);
             t.beginTransaction(
                     TransactionAction.from(ActionType.SUB, 100));
 
             assertAll(
-                    () -> assertNotEquals(unexpected1, acc1.getMoney()),
-                    () -> assertNotEquals(unexpected2, acc2.getMoney()));
+                    () -> assertNotEquals(unexpected1, acc1.getBalance()),
+                    () -> assertNotEquals(unexpected2, acc2.getBalance()));
         }
 
         @Test
@@ -251,11 +251,11 @@ public class TransactionTests {
             Account acc2 = accounts.get(1);
             Account acc3 = accounts.get(2);
 
-            acc1.setMoney(100);
-            acc2.setMoney(100);
-            acc3.setMoney(100);
-            double before1 = acc1.getMoney();
-            double before3 = acc3.getMoney();
+            acc1.setBalance(100);
+            acc2.setBalance(100);
+            acc3.setBalance(100);
+            double before1 = acc1.getBalance();
+            double before3 = acc3.getBalance();
             double expected1 = 0;
             double expected2 = 200;
             double expected3 = 90;
@@ -267,11 +267,11 @@ public class TransactionTests {
             t2.beginTransaction(TransactionAction.from(ActionType.SUB, 10));
 
             assertAll(
-                    () -> assertTrue(before1 > acc1.getMoney()),
-                    () -> assertEquals(expected1, acc1.getMoney()),
-                    () -> assertTrue(before3 > acc3.getMoney()),
-                    () -> assertEquals(expected3, acc3.getMoney()),
-                    () -> assertEquals(expected2, acc2.getMoney()));
+                    () -> assertTrue(before1 > acc1.getBalance()),
+                    () -> assertEquals(expected1, acc1.getBalance()),
+                    () -> assertTrue(before3 > acc3.getBalance()),
+                    () -> assertEquals(expected3, acc3.getBalance()),
+                    () -> assertEquals(expected2, acc2.getBalance()));
         }
 
         @Test
@@ -280,12 +280,12 @@ public class TransactionTests {
             Account acc2 = accounts.get(1);
             Account acc3 = accounts.get(2);
 
-            acc1.setMoney(100);
-            acc2.setMoney(100);
-            acc3.setMoney(100);
-            double before1 = acc1.getMoney();
-            double before2 = acc2.getMoney();
-            double before3 = acc3.getMoney();
+            acc1.setBalance(100);
+            acc2.setBalance(100);
+            acc3.setBalance(100);
+            double before1 = acc1.getBalance();
+            double before2 = acc2.getBalance();
+            double before3 = acc3.getBalance();
             double expected1 = 110;
             double expected2 = 90;
             double expected3 = 110;
@@ -297,54 +297,54 @@ public class TransactionTests {
             t2.beginTransaction(TransactionAction.from(ActionType.ADD, 10));
 
             assertAll(
-                    () -> assertTrue(before1 < acc1.getMoney()),
-                    () -> assertEquals(expected1, acc1.getMoney()),
-                    () -> assertTrue(before3 < acc3.getMoney()),
-                    () -> assertEquals(expected3, acc3.getMoney()),
-                    () -> assertEquals(expected2, acc2.getMoney()));
+                    () -> assertTrue(before1 < acc1.getBalance()),
+                    () -> assertEquals(expected1, acc1.getBalance()),
+                    () -> assertTrue(before3 < acc3.getBalance()),
+                    () -> assertEquals(expected3, acc3.getBalance()),
+                    () -> assertEquals(expected2, acc2.getBalance()));
         }
 
         @Test
         void whenActionAddNotEnoughMoneyToTransfer_expectTransactionException() {
             Account acc1 = accounts.get(0);
             Account acc2 = accounts.get(1);
-            acc1.setMoney(10);
-            acc2.setMoney(0);
+            acc1.setBalance(10);
+            acc2.setBalance(0);
 
-            double expected1 = acc1.getMoney();
-            double expected2 = acc2.getMoney();
+            double expected1 = acc1.getBalance();
+            double expected2 = acc2.getBalance();
 
             Transaction t1 = new Transaction(acc1, acc2);
             Executable f = () -> t1.beginTransaction(TransactionAction.from(ActionType.ADD, 10));
             assertAll(
                     () -> assertThrowsExactly(TransactionException.class, f),
-                    () -> assertEquals(expected1, acc1.getMoney()),
-                    () -> assertEquals(expected2, acc2.getMoney()));
+                    () -> assertEquals(expected1, acc1.getBalance()),
+                    () -> assertEquals(expected2, acc2.getBalance()));
         }
 
         @Test
         void whenActionSubAndNotEnoughMoneyToTransfer_expectTransactionException() {
             Account acc1 = accounts.get(0);
             Account acc2 = accounts.get(1);
-            acc1.setMoney(0);
-            acc2.setMoney(10);
+            acc1.setBalance(0);
+            acc2.setBalance(10);
 
-            double expected1 = acc1.getMoney();
-            double expected2 = acc2.getMoney();
+            double expected1 = acc1.getBalance();
+            double expected2 = acc2.getBalance();
 
             Transaction t = new Transaction(acc1, acc2);
             Executable f = () -> t.beginTransaction(TransactionAction.from(ActionType.SUB, 10));
 
             assertAll(
                     () -> assertThrowsExactly(TransactionException.class, f),
-                    () -> assertEquals(expected1, acc1.getMoney()),
-                    () -> assertEquals(expected2, acc2.getMoney()));
+                    () -> assertEquals(expected1, acc1.getBalance()),
+                    () -> assertEquals(expected2, acc2.getBalance()));
         }
 
         @Test
         void whenWithdrawAndNotEnoughMoney_expectTransactionException() {
             Account acc1 = accounts.get(0);
-            acc1.setMoney(10);
+            acc1.setBalance(10);
 
             Transaction t = new Transaction(acc1);
             Executable f = () -> t.beginTransaction(TransactionAction.from(ActionType.SUB, 20));
@@ -354,25 +354,25 @@ public class TransactionTests {
         @Test
         void whenTargetTheSameAsOriginAccount_expectMoneyChangeEqualZero() throws TransactionException {
             Account acc1 = accounts.get(0);
-            acc1.setMoney(10);
-            double before = acc1.getMoney();
+            acc1.setBalance(10);
+            double before = acc1.getBalance();
             double expected = before;
 
             Transaction t = new Transaction(acc1, acc1);
             t.beginTransaction(TransactionAction.from(ActionType.SUB, 9));
 
-            assertEquals(expected, acc1.getMoney());
+            assertEquals(expected, acc1.getBalance());
 
             t.beginTransaction(TransactionAction.from(ActionType.ADD, 9));
 
-            assertEquals(expected, acc1.getMoney());
+            assertEquals(expected, acc1.getBalance());
         }
 
         @Test
         void whenTargetTheSameAsOriginAccountAndNotEnoughMoney_expectTransactionException() {
             Account acc1 = accounts.get(0);
-            acc1.setMoney(10);
-            double before = acc1.getMoney();
+            acc1.setBalance(10);
+            double before = acc1.getBalance();
             double expected = before;
 
             Transaction t = new Transaction(acc1, acc1);

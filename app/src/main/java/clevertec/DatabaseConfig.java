@@ -5,6 +5,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConfig {
+    
+    /** 
+     * @return Connection
+     * @throws SQLException
+     */
     public static Connection getConnecion() throws SQLException {
         Connection connection = null;
         try {
