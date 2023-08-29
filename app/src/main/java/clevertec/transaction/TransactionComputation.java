@@ -3,7 +3,9 @@ package clevertec.transaction;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import clevertec.Account;
 import clevertec.transaction.check.TransactionCheck;
@@ -13,11 +15,17 @@ import clevertec.transaction.check.TransactionCheck;
  */
 public class TransactionComputation {
 
+    private String id;
+
     private final Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction;
 
+    private final Supplier<String> transactionId;
+
     TransactionComputation(
-            Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction) {
+            Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction,
+            Supplier<String> transactionId) {
         this.transaction = transaction;
+        this.transactionId = transactionId;
     }
 
     private Function<TransactionAction, BiFunction<Account, Account, TransactionCheck>> doTransfer = (
@@ -70,12 +78,21 @@ public class TransactionComputation {
      * @throws TransactionException
      */
     public TransactionCheck transfer(TransactionAction action) throws TransactionException {
-
         try {
-            return transaction.apply(doTransfer.apply(action));
+            if (id != null) {
+                throw new TransactionRuntimeException("Can't run twice the same transaction");
+            }
+
+            TransactionCheck check = transaction.apply(doTransfer.apply(action));
+            setId(transactionId.get());
+            return check;
         } catch (TransactionRuntimeException ex) {
             throw new TransactionException(ex);
         }
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

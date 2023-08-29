@@ -12,4 +12,8 @@ public class TransactionException extends Exception {
     public TransactionException(Throwable var1) {
         super(var1);
     }
+
+    public TransactionException(String msg) {
+        super(msg);
+    }
 }

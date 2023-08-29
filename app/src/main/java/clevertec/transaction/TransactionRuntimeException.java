@@ -5,4 +5,11 @@ package clevertec.transaction;
  */
 class TransactionRuntimeException extends RuntimeException {
 
+    public TransactionRuntimeException() {
+        super();
+    }
+
+    public TransactionRuntimeException(String msg) {
+        super(msg);
+    }
 }

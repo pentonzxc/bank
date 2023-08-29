@@ -111,7 +111,7 @@ public class TransactionTests {
         }
 
         @Test
-        void whenActionAddNotEnoughMoneyToTransfer_expectTransactionException() {
+        void whenActionAddNotEnoughMoneyToTransfer_expectTransactionException() throws TransactionException {
             Account acc1 = accounts.get(0);
             Account acc2 = accounts.get(1);
             acc1.setBalance(10);
@@ -130,7 +130,7 @@ public class TransactionTests {
         }
 
         @Test
-        void whenActionSubAndNotEnoughMoneyToTransfer_expectTransactionException() {
+        void whenActionSubAndNotEnoughMoneyToTransfer_expectTransactionException() throws TransactionException {
             Account acc1 = accounts.get(0);
             Account acc2 = accounts.get(1);
             acc1.setBalance(0);
@@ -150,7 +150,7 @@ public class TransactionTests {
         }
 
         @Test
-        void whenWithdrawAndNotEnoughMoney_expectTransactionException() {
+        void whenWithdrawAndNotEnoughMoney_expectTransactionException() throws TransactionException {
             Account acc1 = accounts.get(0);
             acc1.setBalance(10);
 
@@ -179,7 +179,8 @@ public class TransactionTests {
         }
 
         @Test
-        void whenTargetTheSameAsOriginAccountAndNotEnoughMoney_expectTransactionException() {
+        void whenTargetTheSameAsOriginAccountAndNotEnoughMoney_expectTransactionException()
+                throws TransactionException {
             Account acc1 = accounts.get(0);
             acc1.setBalance(10);
             double before = acc1.getBalance();

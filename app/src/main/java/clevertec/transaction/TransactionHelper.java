@@ -39,7 +39,7 @@ class TransactionHelper {
                 @NonNull ActionType type,
                 @NonNull ActionDirection direction,
                 @NonNull Account main,
-                @NonNull Account aux) {
+                Account aux) {
             if ((direction == ActionDirection.ACCOUNT_TRANSFER || main == aux) && type == ActionType.ADD) {
                 check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
             } else if ((direction == ActionDirection.ACCOUNT_TRANSFER || main == aux) && type == ActionType.SUB) {
@@ -75,7 +75,7 @@ class TransactionHelper {
                 @NonNull ActionDescription description,
                 @NonNull ActionType type,
                 @NonNull Account main,
-                @NonNull Account aux) {
+                Account aux) {
             if (description == ActionDescription.ACCOUNT_TRANSFER_ADD
                     || description == ActionDescription.ACCOUNT_TRANSFER_SUB) {
                 check.setOriginAccountNumber(main.getAccountNumber());

@@ -27,12 +27,10 @@ public class Transaction {
 
     private Account aux;
 
-    /**
-     * Transaction will be only over origin.
-     * Operations on origin influence only origin.
-     * 
-     * @param origin
-     */
+    private LocalDateTime beginDateTime;
+
+    private LocalDateTime endDateTime;
+
     public Transaction(@NonNull Account origin) {
         this(origin, null);
     }
@@ -71,6 +69,7 @@ public class Transaction {
 
     private Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction = f -> {
         TransactionCheck check = null;
+        beginDateTime = LocalDateTime.now();
         if (aux == null) {
             synchronized (main.getLock()) {
                 check = onFailureRollback.apply(f);
@@ -85,13 +84,16 @@ public class Transaction {
             }
         }
 
+        // id = generateTransactionId()
+        endDateTime = LocalDateTime.now();
         return check;
     };
 
     /**
      * Some rules:
      * <p>
-     * 1) Transaction <b>cannot run twice and more</b>.
+     * 1) Transaction <b>cannot run twice and more</b>, else throws
+     * {@link TransactionException}.
      * <p>
      * 2) The direction of the operations <b>depends on how many participants</b> in
      * the
@@ -118,10 +120,17 @@ public class Transaction {
      * @see Transaction#Transaction(Account, Account)
      * @see Transaction#between(Account, Account)
      * 
-     * @return TransactionRunner
+     * @return TransactionComputation
      */
-    public TransactionComputation begin() {
-        return new TransactionComputation(transaction);
+    public TransactionComputation begin() throws TransactionException {
+        if (id != null) {
+            throw new TransactionException("Can't run twice the same transaction");
+        }
+        return new TransactionComputation(transaction, () -> id);
+    }
+
+    public TransactionView view() {
+        return new TransactionView(id, beginDateTime, endDateTime);
     }
 
     /**
@@ -264,6 +273,10 @@ public class Transaction {
      */
     public static Transaction between(Account main, Account aux) {
         return new Transaction(main, aux);
+    }
+
+    void setId(String id) {
+        this.id = id;
     }
 
     /**
