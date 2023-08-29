@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -212,16 +213,15 @@ public class TransactionTests {
                 assertNotNull(check);
             }
 
-            final TransactionCheck check = check_[0];
+            final TransactionCheck actual = check_[0];
 
             assertAll(
-                    () -> assertEquals(expected.getOriginBank(), check.getOriginBank()),
-                    () -> assertEquals(expected.getTargetBank().get(), check.getTargetBank().get()),
-                    () -> assertEquals(expected.getOriginAccountNumber(), check.getOriginAccountNumber()),
-                    () -> assertEquals(expected.getTargetAccountNumber().get(), check.getTargetAccountNumber().get()),
-                    () -> assertEquals(expected.getTransferAmount(), check.getTransferAmount()),
-                    () -> assertEquals(expected.getDateTime(), check.getDateTime()),
-                    () -> assertEquals(expected.getDescription(), check.getDescription()));
+                    () -> assertEquals(expected.getOrigin().getAccountNumber(), actual.getOrigin().getAccountNumber()),
+                    () -> assertEquals(expected.getTarget().get().getAccountNumber(),
+                            actual.getTarget().get().getAccountNumber()),
+                    () -> assertEquals(expected.getTransferAmount(), actual.getTransferAmount()),
+                    () -> assertEquals(expected.getDateTime(), actual.getDateTime()),
+                    () -> assertEquals(expected.getDescription(), actual.getDescription()));
         }
     }
 
@@ -401,16 +401,15 @@ public class TransactionTests {
                 assertNotNull(check);
             }
 
-            final TransactionCheck check = check_[0];
+            final TransactionCheck actual = check_[0];
 
             assertAll(
-                    () -> assertEquals(expected.getOriginBank(), check.getOriginBank()),
-                    () -> assertEquals(expected.getTargetBank().get(), check.getTargetBank().get()),
-                    () -> assertEquals(expected.getOriginAccountNumber(), check.getOriginAccountNumber()),
-                    () -> assertEquals(expected.getTargetAccountNumber().get(), check.getTargetAccountNumber().get()),
-                    () -> assertEquals(expected.getTransferAmount(), check.getTransferAmount()),
-                    () -> assertEquals(expected.getDateTime(), check.getDateTime()),
-                    () -> assertEquals(expected.getDescription(), check.getDescription()));
+                    () -> assertEquals(expected.getOrigin().getAccountNumber(), actual.getOrigin().getAccountNumber()),
+                    () -> assertEquals(expected.getTarget().get().getAccountNumber(),
+                            actual.getTarget().get().getAccountNumber()),
+                    () -> assertEquals(expected.getTransferAmount(), actual.getTransferAmount()),
+                    () -> assertEquals(expected.getDateTime(), actual.getDateTime()),
+                    () -> assertEquals(expected.getDescription(), actual.getDescription()));
 
         }
     }

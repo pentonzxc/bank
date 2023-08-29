@@ -5,6 +5,9 @@ import java.time.LocalTime;
 import java.util.Optional;
 import java.util.function.Function;
 
+import clevertec.Account;
+import clevertec.Bank;
+
 public class TransactionPrinterFactory {
     private TransactionPrinterFactory() {
     }
@@ -40,7 +43,7 @@ public class TransactionPrinterFactory {
                 result = generateHeaderRow(result, HeaderWord);
                 newLineInPlace(result);
 
-                result = generateRow(result, CheckIdLabel, check.getId(), Function.identity());
+                result = generateRow(result, CheckIdLabel, check.getId(), id -> id.toString());
                 newLineInPlace(result);
 
                 String mutDateLabel = check.getDateTime().toLocalDate().toString();
@@ -54,26 +57,28 @@ public class TransactionPrinterFactory {
                         ActionDescription::getDescription);
                 newLineInPlace(result);
 
-                result = generateRow(result, OriginBankLabel, check.getOriginBank(), Function.identity());
-                newLineInPlace(result);
-
-                Optional<String> targetBankOpt = check.getTargetBank();
-                if (targetBankOpt.isPresent()) {
-                    result = generateRow(result, TargetBankLabel, targetBankOpt, Optional::get);
-                } else {
-                    result = generateRow(result, TargetBankLabel, check.getOriginBank(), Function.identity());
-                }
-                newLineInPlace(result);
-
-                result = generateRow(result, OriginAccountNumberLabel, check.getOriginAccountNumber(),
+                result = generateRow(result, OriginBankLabel, check.getOrigin().getBank().getName(),
                         Function.identity());
                 newLineInPlace(result);
 
-                Optional<String> targetAccountNumberOpt = check.getTargetAccountNumber();
+                Optional<String> targetBankOpt = check.getTarget().map(Account::getBank).map(Bank::getName);
+                if (targetBankOpt.isPresent()) {
+                    result = generateRow(result, TargetBankLabel, targetBankOpt, Optional::get);
+                } else {
+                    result = generateRow(result, TargetBankLabel, check.getOrigin().getBank().getName(),
+                            Function.identity());
+                }
+                newLineInPlace(result);
+
+                result = generateRow(result, OriginAccountNumberLabel, check.getOrigin().getAccountNumber(),
+                        Function.identity());
+                newLineInPlace(result);
+
+                Optional<String> targetAccountNumberOpt = check.getTarget().map(Account::getAccountNumber);
                 if (targetAccountNumberOpt.isPresent()) {
                     result = generateRow(result, TargetAccountNumberLabel, targetAccountNumberOpt, Optional::get);
                 } else {
-                    result = generateRow(result, OriginAccountNumberLabel, check.getOriginAccountNumber(),
+                    result = generateRow(result, OriginAccountNumberLabel, check.getOrigin().getAccountNumber(),
                             Function.identity());
                 }
                 newLineInPlace(result);

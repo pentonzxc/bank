@@ -129,10 +129,6 @@ public class Transaction {
         return new TransactionComputation(transaction, () -> id);
     }
 
-    public TransactionView view() {
-        return new TransactionView(id, beginDateTime, endDateTime);
-    }
-
     /**
      * @param action
      * @return TransactionCheck

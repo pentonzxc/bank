@@ -90,20 +90,14 @@ public class TransactionHelper {
                 Account aux) {
             if (description == ActionDescription.ACCOUNT_TRANSFER_ADD
                     || description == ActionDescription.ACCOUNT_TRANSFER_SUB) {
-                check.setOriginAccountNumber(main.getAccountNumber());
-                check.setOriginBank(main.getBank().getName());
-                check.setTargetAccountNumber(main.getAccountNumber());
-                check.setTargetBank(main.getBank().getName());
+                check.setOrigin(main);
+                check.setTarget(main);
             } else if (description == ActionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.ADD) {
-                check.setOriginAccountNumber(aux.getAccountNumber());
-                check.setOriginBank(aux.getBank().getName());
-                check.setTargetAccountNumber(main.getAccountNumber());
-                check.setTargetBank(main.getBank().getName());
+                check.setOrigin(aux);
+                check.setTarget(main);
             } else if (description == ActionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.SUB) {
-                check.setOriginAccountNumber(main.getAccountNumber());
-                check.setOriginBank(main.getBank().getName());
-                check.setTargetAccountNumber(aux.getAccountNumber());
-                check.setTargetBank(aux.getBank().getName());
+                check.setOrigin(main);
+                check.setTarget(aux);
             }
         }
 

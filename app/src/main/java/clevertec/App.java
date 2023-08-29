@@ -5,6 +5,7 @@ package clevertec;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import clevertec.account_interest.scheduler.InterestChecker;
@@ -104,11 +105,15 @@ public class App {
         TransactionCheck c = new TransactionCheck();
         c.setDateTime(LocalDateTime.now());
         c.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
-        c.setId("123");
-        c.setOriginBank("Bank1");
-        c.setTargetBank("Bank2");
-        c.setOriginAccountNumber("123");
-        c.setTargetAccountNumber("1234");
+        Account acc1 = new Account();
+        acc1.setBank(new Bank("Bank1"));
+        acc1.setAccountNumber("123");
+        Account acc2 = new Account();
+        acc2.setBank(new Bank("Bank 2"));
+        acc2.setAccountNumber("1234");
+        c.setId(UUID.randomUUID());
+        c.setOrigin(acc1);
+        c.setTarget(acc2);
         c.setTransferAmount(100);
 
         return TransactionPrinterFactory.stringPrinter().view(c);
