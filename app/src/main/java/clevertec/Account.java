@@ -3,12 +3,15 @@ package clevertec;
 import static clevertec.util.MoneyUtil.roundMoney;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class that represents account in bank.
+ */
 @NoArgsConstructor
 public class Account {
 
     private Integer id;
 
-    private double money = 0d;
+    private double balance = 0d;
 
     private Bank bank;
 
@@ -18,83 +21,148 @@ public class Account {
 
     private final Object lock = new Object();
 
+    /**
+     * Add money to balance.
+     * 
+     * @param money - to add
+     * @return double
+     */
     public double addMoney(double money) {
-        this.money = roundMoney(this.money + money);
-        return this.money;
+        this.balance = roundMoney(this.balance + money);
+        return this.balance;
     }
 
+    /**
+     * Take percent of balance and add to balance.
+     * 
+     * @param percent - percent of balance to add
+     * @return double
+     */
     public double addPercent(double percent) {
-        money = roundMoney(money * (1 + percent / 100));
-        return money;
+        balance = roundMoney(balance * (1 + percent / 100));
+        return balance;
     }
 
+    /**
+     * Subtract money from balance.
+     * 
+     * @param money - to subtract
+     * @return Double
+     */
     public Double subMoney(double money) {
-        if (this.money < money) {
+        if (this.balance < money) {
             return -1d;
         }
-        this.money = roundMoney(this.money - money);
-        return this.money;
+        this.balance = roundMoney(this.balance - money);
+        return this.balance;
     }
 
+    /**
+     * Transfer money to target account.
+     * 
+     * @param target - where to transfer money
+     * @param change - to transfer
+     * @return double
+     */
     public double transfer(Account target, double change) {
         if (subMoney(change) == -1) {
             return -1d;
         }
         target.addMoney(change);
-        return this.money;
+        return this.balance;
     }
 
+    /**
+     * @return Integer
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     * @param id
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
-    public double getMoney() {
-        return money;
+    /**
+     * @return double
+     */
+    public double getBalance() {
+        return balance;
     }
 
-    public void setMoney(double money) {
-        this.money = roundMoney(money);
+    /**
+     * @param money
+     */
+    public void setBalance(double money) {
+        this.balance = roundMoney(money);
     }
 
+    /**
+     * @return Bank
+     */
     public Bank getBank() {
         return bank;
     }
 
+    /**
+     * @param bank
+     */
     public void setBank(Bank bank) {
         this.bank = bank;
     }
 
+    /**
+     * @return User
+     */
     public User getUser() {
         return user;
     }
 
+    /**
+     * @param user
+     */
     public void setUser(User user) {
         this.user = user;
     }
 
+    /**
+     * @return Object
+     */
     public Object getLock() {
         return lock;
     }
 
+    /**
+     * @return String
+     */
     public String getAccountNumber() {
         return accountNumber;
     }
 
+    /**
+     * @param accountNumber
+     */
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
     }
 
+    /**
+     * Copy of account.
+     * <p>
+     * <b>Bank and User copy by references</b>.
+     * 
+     * @return Account
+     */
     public Account softCopy() {
         Account copy = new Account();
         copy.setId(id);
         copy.setBank(bank);
         copy.setAccountNumber(accountNumber);
         copy.setUser(user);
-        copy.setMoney(money);
+        copy.setBalance(balance);
 
         return copy;
     }

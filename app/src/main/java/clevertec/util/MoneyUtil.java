@@ -7,6 +7,13 @@ public class MoneyUtil {
     private MoneyUtil() {
     }
 
+    /**
+     * Round double to specified places.
+     * 
+     * @param numeric
+     * @param places
+     * @return double
+     */
     public static double round(double numeric, int places) {
         if (places < 0) {
             throw new IllegalArgumentException();
@@ -16,6 +23,12 @@ public class MoneyUtil {
         return bd.doubleValue();
     }
 
+    /**
+     * Round double to 2 places.
+     * 
+     * @param numeric
+     * @return double
+     */
     public static double roundMoney(double numeric) {
         return round(numeric, 2);
     }

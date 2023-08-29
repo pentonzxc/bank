@@ -8,11 +8,14 @@ import java.util.function.Function;
 import clevertec.Account;
 import clevertec.transaction.check.TransactionCheck;
 
-public class TransactionRunner {
+/**
+ * Class that is responsible for transaction computation process.
+ */
+public class TransactionComputation {
 
     private final Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction;
 
-    TransactionRunner(
+    TransactionComputation(
             Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction) {
         this.transaction = transaction;
     }
@@ -22,7 +25,7 @@ public class TransactionRunner {
                 TransactionCheck check = new TransactionCheck();
                 ActionType actionType = action.getType();
                 ActionDirection actionDirection = ActionDirection.NONE;
-                double change = action.getChange();
+                double change = action.getTransferAmount();
                 double success = 0;
 
                 if (aux == null) {
@@ -59,7 +62,14 @@ public class TransactionRunner {
                 return check;
             };
 
-    public TransactionCheck run(TransactionAction action) throws TransactionException {
+    /**
+     * Compute transaction
+     * 
+     * @param action - action to transfer
+     * @return TransactionCheck
+     * @throws TransactionException
+     */
+    public TransactionCheck transfer(TransactionAction action) throws TransactionException {
 
         try {
             return transaction.apply(doTransfer.apply(action));

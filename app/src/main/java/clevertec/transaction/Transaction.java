@@ -13,6 +13,11 @@ import clevertec.util.Pair;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 
+ * Transaction is a class that represent change on account or accounts.
+ *
+ */
 // @Data
 @Slf4j
 public class Transaction {
@@ -22,10 +27,22 @@ public class Transaction {
 
     private Account aux;
 
+    /**
+     * Transaction will be only over origin.
+     * Operations on origin influence only origin.
+     * 
+     * @param origin
+     */
     public Transaction(@NonNull Account origin) {
         this(origin, null);
     }
 
+    /**
+     * Transaction will be over main and aux.
+     * 
+     * @param main - the most significant side of the transaction.
+     * @param aux  - the second side of the transaction.
+     */
     public Transaction(@NonNull Account main, Account aux) {
         this.main = main;
         this.aux = aux;
@@ -44,9 +61,9 @@ public class Transaction {
 
         check = f.apply(copyMain, copyAux);
 
-        main.setMoney(copyMain.getMoney());
+        main.setBalance(copyMain.getBalance());
         if (copyAux != null) {
-            aux.setMoney(copyAux.getMoney());
+            aux.setBalance(copyAux.getBalance());
         }
 
         return check;
@@ -71,10 +88,47 @@ public class Transaction {
         return check;
     };
 
-    public TransactionRunner begin() {
-        return new TransactionRunner(transaction);
+    /**
+     * Some rules:
+     * <p>
+     * 1) Transaction <b>cannot run twice and more</b>.
+     * <p>
+     * 2) The direction of the operations <b>depends on how many participants</b> in
+     * the
+     * transaction.
+     * <b>Only one participant</b>,
+     * operations like <b>add replenish
+     * account balance</b> and like <b>sub withdraw money</b> from the
+     * account.
+     * Two participant <b>depends on in which order you pass your accounts
+     * arguments, when
+     * create Transaction</b>.
+     * First order - the most significant. It's called main argument.
+     * Operations on it equal operations on only one participant, but money flow
+     * the next:
+     * <b>add => main <- aux, sub => main -> aux </b>
+     * <p>
+     * 3) If money doesn't enough to perform any operation on any account,
+     * <b>Transaction will be rollbacked</b> and throwed
+     * {@link TransactionException}
+     * 
+     * 
+     * @see TransactionException
+     * @see Transaction#Transaction(Account)
+     * @see Transaction#Transaction(Account, Account)
+     * @see Transaction#between(Account, Account)
+     * 
+     * @return TransactionRunner
+     */
+    public TransactionComputation begin() {
+        return new TransactionComputation(transaction);
     }
 
+    /**
+     * @param action
+     * @return TransactionCheck
+     * @throws TransactionException
+     */
     @Deprecated(since = "feature/refactor_transaction")
     public TransactionCheck beginTransaction(TransactionAction action) throws TransactionException {
 
@@ -104,6 +158,11 @@ public class Transaction {
         // handle transaction
     }
 
+    /**
+     * @param action
+     * @return TransactionCheck
+     * @throws TransactionException
+     */
     @Deprecated(since = "feature/refactor_transaction")
     // TODO maybe add rollback:
     private TransactionCheck processTransaction(TransactionAction action) throws TransactionException {
@@ -128,14 +187,20 @@ public class Transaction {
             throw new TransactionException();
         }
 
-        main.setMoney(copyMain.getMoney());
+        main.setBalance(copyMain.getBalance());
         if (copyAux != null)
-            aux.setMoney(copyAux.getMoney());
+            aux.setBalance(copyAux.getBalance());
         // log success
 
         return check;
     }
 
+    /**
+     * @param action
+     * @param main
+     * @param aux
+     * @return Pair<TransactionCheck, Boolean>
+     */
     @Deprecated(since = "feature/refactor_transaction")
     private Pair<TransactionCheck, Boolean> doTranscationActions(
             TransactionAction action,
@@ -144,7 +209,7 @@ public class Transaction {
         TransactionCheck check = new TransactionCheck();
         ActionType actionType = action.getType();
         ActionDirection actionDirection = ActionDirection.NONE;
-        double change = action.getChange();
+        double change = action.getTransferAmount();
         double success = 0;
 
         if (aux == null) {
@@ -188,14 +253,29 @@ public class Transaction {
         return new Pair<TransactionCheck, Boolean>(check, true);
     }
 
-    public static Transaction between(@NonNull Account main, Account aux) {
+    /**
+     * 
+     * More appropriate api to create transaction.
+     * 
+     * @see Transaction#Transaction(Account, Account)
+     * @param main - main account
+     * @param aux  - aux account
+     * @return Transaction
+     */
+    public static Transaction between(Account main, Account aux) {
         return new Transaction(main, aux);
     }
 
+    /**
+     * @return Account
+     */
     public Account getMain() {
         return main;
     }
 
+    /**
+     * @return Optional<Account>
+     */
     public Optional<Account> getAux() {
         return Optional.fromNullable(aux);
     }

@@ -25,6 +25,10 @@ public class TestInstanceInterestChecker extends InterestChecker {
         this(2, false, false);
     }
 
+    
+    /** 
+     * @return boolean
+     */
     @Override
     protected boolean isTodayLastDayOfMonth() {
         return this.mockDate;

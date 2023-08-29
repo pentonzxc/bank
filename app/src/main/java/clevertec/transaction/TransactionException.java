@@ -1,5 +1,8 @@
 package clevertec.transaction;
 
+/**
+ * Exception that is threw in Transactions classes.
+ */
 public class TransactionException extends Exception {
 
     public TransactionException() {

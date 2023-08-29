@@ -9,6 +9,13 @@ public class TransactionPrinterFactory {
     private TransactionPrinterFactory() {
     }
 
+    /**
+     * Basic string view realization.
+     * <p>
+     * Represent check as block text.
+     * 
+     * @return TransactionPrinter<String>
+     */
     static public TransactionPrinter<String> stringPrinter() {
         return new TransactionPrinter<String>() {
             final int width = 70;
