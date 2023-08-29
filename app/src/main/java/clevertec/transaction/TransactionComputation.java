@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 
 import clevertec.Account;
 import clevertec.transaction.check.TransactionCheck;
+import clevertec.transaction.check.TransactionPrinter;
+import clevertec.transaction.check.TransactionPrinterFactory;
 
 /**
  * Class that is responsible for transaction computation process.
@@ -77,18 +79,24 @@ public class TransactionComputation {
      * @return TransactionCheck
      * @throws TransactionException
      */
-    public TransactionCheck transfer(TransactionAction action) throws TransactionException {
+    public TransactionCheck transfer(TransactionAction action, boolean saveCheck) throws TransactionException {
         try {
             if (id != null) {
                 throw new TransactionRuntimeException("Can't run twice the same transaction");
             }
-
             TransactionCheck check = transaction.apply(doTransfer.apply(action));
-            setId(transactionId.get());
+            this.setId(transactionId.get());
+            if (saveCheck) {
+                TransactionHelper.Check.saveAsFile(check, TransactionPrinterFactory.stringPrinter());
+            }
             return check;
         } catch (TransactionRuntimeException ex) {
             throw new TransactionException(ex);
         }
+    }
+
+    public TransactionCheck transfer(TransactionAction action) throws TransactionException {
+        return transfer(action, false);
     }
 
     public void setId(String id) {

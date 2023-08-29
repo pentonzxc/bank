@@ -1,8 +1,17 @@
 package clevertec.transaction;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import clevertec.Account;
 import clevertec.transaction.check.ActionDescription;
 import clevertec.transaction.check.TransactionCheck;
+import clevertec.transaction.check.TransactionPrinter;
+import clevertec.transaction.check.TransactionPrinterFactory;
+import clevertec.util.DateUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,11 +19,14 @@ import lombok.extern.slf4j.Slf4j;
  * Helper class.
  */
 @Slf4j
-class TransactionHelper {
+public class TransactionHelper {
     private TransactionHelper() {
     }
 
-    class Check {
+    public class Check {
+
+        public static final String CHECK_DIR_PATH = "check";
+
         private Check() {
         }
 
@@ -34,7 +46,7 @@ class TransactionHelper {
          * @param aux       - based on that
          */
 
-        public static void resolveAndSetActionDescriptionInPlace(
+        static void resolveAndSetActionDescriptionInPlace(
                 @NonNull TransactionCheck check,
                 @NonNull ActionType type,
                 @NonNull ActionDirection direction,
@@ -70,7 +82,7 @@ class TransactionHelper {
          * @param main        - contains main number and bank
          * @param aux         - contains aux number and bank
          */
-        public static void resolveAndSetOriginAndTargetInPlace(
+        static void resolveAndSetOriginAndTargetInPlace(
                 @NonNull TransactionCheck check,
                 @NonNull ActionDescription description,
                 @NonNull ActionType type,
@@ -92,6 +104,29 @@ class TransactionHelper {
                 check.setOriginBank(main.getBank().getName());
                 check.setTargetAccountNumber(aux.getAccountNumber());
                 check.setTargetBank(aux.getBank().getName());
+            }
+        }
+
+        /**
+         * Save check as file in {@link Check#CHECK_DIR_PATH}.
+         * <p>
+         * To transform check into string use {@link TransactionTransformer} type of
+         * String.
+         * 
+         * @param check   - to save
+         * @param printer - transformer
+         * @return created file
+         */
+        public static File saveAsFile(@NonNull TransactionCheck check,
+                @NonNull TransactionPrinter<String> printer) {
+            String fileName = check.getId() + "|" + DateUtil.dateTimeToStringWithoutSeconds(check.getDateTime());
+            try {
+                return Files.writeString(
+                        Path.of(CHECK_DIR_PATH, fileName),
+                        printer.view(check),
+                        StandardCharsets.UTF_8).toFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }

@@ -4,6 +4,7 @@
 package clevertec;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 
 import clevertec.account_interest.scheduler.InterestChecker;
@@ -12,6 +13,7 @@ import clevertec.transaction.ActionType;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.TransactionAction;
 import clevertec.transaction.TransactionException;
+import clevertec.transaction.TransactionHelper;
 import clevertec.transaction.TransactionComputation;
 import clevertec.transaction.check.ActionDescription;
 import clevertec.transaction.check.TransactionCheck;
@@ -25,13 +27,10 @@ public class App {
      * @throws ExecutionException
      */
     public static void main(String[] args) throws InterruptedException, ExecutionException {
-        // exampleFlow();
-        exampleFlow();
-        System.out.println("DEPRECATED");
-        deprecatedExampleFlow();
+        System.out.println("Hello world!");
     }
 
-    static public void exampleFlow() {
+    static public void example1() {
         var bank = new Bank("example");
         var user1 = new User("Kolya", "Urusov", "1990-02-23");
         var user2 = new User("Pasha", "Urusov", "1990-02-23");
@@ -65,7 +64,7 @@ public class App {
         System.out.println("After2 :: " + account2.getBalance());
     }
 
-    static public void deprecatedExampleFlow() {
+    static public void example2() {
         var bank = new Bank("example");
         var user1 = new User("Kolya", "Urusov", "1990-02-23");
         var user2 = new User("Pasha", "Urusov", "1990-02-23");
@@ -101,7 +100,7 @@ public class App {
 
     }
 
-    static public String exampleCheck() {
+    static public String example3() {
         TransactionCheck c = new TransactionCheck();
         c.setDateTime(LocalDateTime.now());
         c.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);

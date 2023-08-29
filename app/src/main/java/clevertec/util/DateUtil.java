@@ -1,6 +1,7 @@
 package clevertec.util;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Class that contains methods to work with date.
@@ -32,6 +33,10 @@ public class DateUtil {
 
         return today.withDayOfMonth(
                 today.getMonth().length(today.isLeapYear()));
+    }
+
+    static public String dateTimeToStringWithoutSeconds(LocalDateTime dateTime) {
+        return dateTime.toString().split("\\.")[0];
     }
 
 }
