@@ -85,7 +85,7 @@ public class FindAllService {
                 account = new Account();
 
                 account.setId(accountRs.getInt("id"));
-                account.setBalance(accountRs.getDouble("money_"));
+                account.setBalance(accountRs.getDouble("balance"));
                 Integer bankId = (accountRs.getInt("bank_id"));
                 Bank bankOpt = banks.getOrDefault(bankId, null);
                 if (bankOpt != null) {

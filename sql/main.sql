@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS user_(
 
 CREATE TABLE IF NOT EXISTS account(
                     id SERIAL PRIMARY KEY,
-                    money_ NUMERIC DEFAULT 0,
+                    balance NUMERIC DEFAULT 0,
                     user_id INT,
                     bank_id INT,
                     CONSTRAINT fk_user
