@@ -2,6 +2,7 @@ package clevertec.transaction;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -84,7 +85,7 @@ public class Transaction {
             }
         }
 
-        // id = generateTransactionId()
+        // id = UUID.randomUUID();
         endDateTime = LocalDateTime.now();
         return check;
     };

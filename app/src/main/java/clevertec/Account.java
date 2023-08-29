@@ -1,6 +1,12 @@
 package clevertec;
 
 import static clevertec.util.MoneyUtil.roundMoney;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import clevertec.transaction.check.TransactionCheck;
 import lombok.NoArgsConstructor;
 
 /**
@@ -17,7 +23,15 @@ public class Account {
 
     private User user;
 
-    private String accountNumber = "1";
+    private List<TransactionCheck> whereOrigin;
+
+    private List<TransactionCheck> whereTarget;
+
+    private String currency;
+
+    private LocalDateTime openingDate = LocalDateTime.now();
+
+    private String accountNumber = UUID.randomUUID().toString();
 
     private final Object lock = new Object();
 
