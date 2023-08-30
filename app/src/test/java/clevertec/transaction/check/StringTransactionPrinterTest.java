@@ -40,7 +40,7 @@ public class StringTransactionPrinterTest {
                 -------------------------------------------------------------------------""";
         TransactionCheck check = new TransactionCheck();
 
-        check.setDateTime(LocalDateTime.parse("2023-08-26T17:43:25", DateTimeFormatter.ISO_DATE_TIME));
+        check.setCreatedAt(LocalDateTime.parse("2023-08-26T17:43:25", DateTimeFormatter.ISO_DATE_TIME));
         check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
         check.setId(UUID.fromString("c916bfac-b3ec-48d7-8116-bedaa81f9a6f"));
         Account acc1 = new Account();
@@ -75,7 +75,7 @@ public class StringTransactionPrinterTest {
 
                 |  Счёт отправителя:                                               123  |
 
-                |  Счёт отправителя:                                               123  |
+                |  Счёт получателя:                                                123  |
 
                 |  Сумма:                                                   100.00 BYN  |
 
@@ -83,15 +83,15 @@ public class StringTransactionPrinterTest {
 
         TransactionCheck check = new TransactionCheck();
 
-        check.setDateTime(LocalDateTime.parse("2023-08-26T17:43:25", DateTimeFormatter.ISO_DATE_TIME));
+        check.setCreatedAt(LocalDateTime.parse("2023-08-26T17:43:25", DateTimeFormatter.ISO_DATE_TIME));
         check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
         Account acc1 = new Account();
-        Account acc2 = new Account();
 
         check.setId(UUID.fromString("c916bfac-b3ec-48d7-8116-bedaa81f9a6f"));
         acc1.setBank(new Bank("Bank1"));
         acc1.setAccountNumber("123");
         check.setOrigin(acc1);
+        check.setTarget(acc1);
         check.setTransferAmount(100);
 
         assertEquals(expected, printer.view(check));

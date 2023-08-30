@@ -52,9 +52,11 @@ public class TransactionHelper {
                 @NonNull ActionDirection direction,
                 @NonNull Account main,
                 Account aux) {
-            if ((direction == ActionDirection.ACCOUNT_TRANSFER || main == aux) && type == ActionType.ADD) {
+            if ((direction == ActionDirection.ACCOUNT_TRANSFER || main.getId() == aux.getId())
+                    && type == ActionType.ADD) {
                 check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
-            } else if ((direction == ActionDirection.ACCOUNT_TRANSFER || main == aux) && type == ActionType.SUB) {
+            } else if ((direction == ActionDirection.ACCOUNT_TRANSFER || main.getId() == aux.getId())
+                    && type == ActionType.SUB) {
                 check.setDescription(ActionDescription.ACCOUNT_TRANSFER_SUB);
             } else if (direction == ActionDirection.ACCOUNT_ACCOUNT_TRANSFER) {
                 check.setDescription(ActionDescription.ACCOUNT_ACCOUNT_TRANSFER);
@@ -113,7 +115,7 @@ public class TransactionHelper {
          */
         public static File saveAsFile(@NonNull TransactionCheck check,
                 @NonNull TransactionPrinter<String> printer) {
-            String fileName = check.getId() + "|" + DateUtil.dateTimeToStringWithoutSeconds(check.getDateTime());
+            String fileName = check.getId() + "|" + DateUtil.dateTimeToStringWithoutSeconds(check.getCreatedAt());
             try {
                 return Files.writeString(
                         Path.of(CHECK_DIR_PATH, fileName),

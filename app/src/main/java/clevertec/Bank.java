@@ -13,13 +13,13 @@ public class Bank {
 
     String name;
 
-    Set<Account> accounts;
+    // Set<Account> accounts;
 
     /**
      * Create empty bank.
      */
     public Bank() {
-        accounts = new HashSet<>();
+        // accounts = new HashSet<>();
     }
 
     /**
@@ -35,9 +35,9 @@ public class Bank {
      * 
      * @param account
      */
-    public void addAccount(final Account account) {
-        accounts.add(account);
-    }
+    // public void addAccount(final Account account) {
+    // accounts.add(account);
+    // }
 
     /**
      * @return Integer
@@ -70,15 +70,15 @@ public class Bank {
     /**
      * @return Set<Account>
      */
-    public Set<Account> getAccounts() {
-        return accounts;
-    }
+    // public Set<Account> getAccounts() {
+    // return accounts;
+    // }
 
-    /**
-     * @param accounts
-     */
-    public void setAccounts(Set<Account> accounts) {
-        this.accounts = accounts;
-    }
+    // /**
+    // * @param accounts
+    // */
+    // public void setAccounts(Set<Account> accounts) {
+    // this.accounts = accounts;
+    // }
 
 }

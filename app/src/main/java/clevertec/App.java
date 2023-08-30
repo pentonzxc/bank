@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import clevertec.account_interest.scheduler.InterestChecker;
 import clevertec.account_interest.scheduler.InterestCheckerFactory;
+import clevertec.service.BankService;
 import clevertec.transaction.ActionType;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.TransactionAction;
@@ -28,7 +29,14 @@ public class App {
      * @throws ExecutionException
      */
     public static void main(String[] args) throws InterruptedException, ExecutionException {
-        System.out.println("Hello world!");
+        var service = new BankService();
+
+        // int id = service.create(new Bank("ky"));
+        var bank = new Bank();
+        bank.setName("CHANGED");
+        bank.setId(10);
+        System.out.println(service.update(bank));
+
     }
 
     static public void example1() {
@@ -65,45 +73,9 @@ public class App {
         System.out.println("After2 :: " + account2.getBalance());
     }
 
-    static public void example2() {
-        var bank = new Bank("example");
-        var user1 = new User("Kolya", "Urusov", "1990-02-23");
-        var user2 = new User("Pasha", "Urusov", "1990-02-23");
-        var account1 = new Account();
-
-        account1.setUser(user1);
-        account1.setBank(bank);
-        account1.setBalance(100);
-        var account2 = new Account();
-        account2.setUser(user2);
-        account2.setBank(bank);
-        account2.setBalance(100);
-        account1.setId(1);
-        account2.setId(2);
-
-        Transaction transaction = new Transaction(account1);
-        System.out.println("Before 1:: " + account1.getBalance());
-        System.out.println("Before 2:: " + account2.getBalance());
-
-        Transaction transaction2 = new Transaction(account2, account1);
-
-        try {
-            transaction.beginTransaction(
-                    new TransactionAction(ActionType.SUB, 5));
-            transaction2.beginTransaction(
-                    new TransactionAction(ActionType.ADD, 15));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        System.out.println("After1 :: " + account1.getBalance());
-        System.out.println("After2 :: " + account2.getBalance());
-
-    }
-
     static public String example3() {
         TransactionCheck c = new TransactionCheck();
-        c.setDateTime(LocalDateTime.now());
+        c.setCreatedAt(LocalDateTime.now());
         c.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
         Account acc1 = new Account();
         acc1.setBank(new Bank("Bank1"));

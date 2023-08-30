@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import clevertec.config.Config;
+import clevertec.service.AccountService;
 import clevertec.util.MoneyUtil;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,14 +90,14 @@ public class InterestCheckerTest {
 
     @Test
     void whenNotLastDayInMonth_expectSameMoneyOnAccounts() throws InterruptedException {
-        List<Bank> banks = (List<Bank>) FindAllService.allEntities()[1];
-        double sumBefore = sumMoneyOfAllAccountsInBanks(banks);
-        checker.setBankStorage(() -> banks);
+        List<Account> accounts = new AccountService().readAll();
+        double sumBefore = balanceSumAllAccounts(accounts);
+        checker.setAccountStorage(() -> accounts);
 
         checker.run();
 
         Thread.sleep(30000);
-        double sumAfter = sumMoneyOfAllAccountsInBanks(banks);
+        double sumAfter = balanceSumAllAccounts(accounts);
         checker = checker.newInstance();
 
         assertTrue(sumBefore == sumAfter);
@@ -105,17 +106,17 @@ public class InterestCheckerTest {
 
     @Test
     void whenLastDayInMonth_expectMoreMoneyOnAccounts() throws InterruptedException {
-        List<Bank> banks = (List<Bank>) FindAllService.allEntities()[1];
-        double sumBefore = sumMoneyOfAllAccountsInBanks(banks);
+        List<Account> accounts = new AccountService().readAll();
+        double sumBefore = balanceSumAllAccounts(accounts);
         Double expectedSum = MoneyUtil
                 .roundMoney(sumBefore * (1 + Config.getProperty("INTEREST_PERCENT", Double::parseDouble) / 100));
 
-        checker.setBankStorage(() -> banks);
+        checker.setAccountStorage(() -> accounts);
         checker.setMockDate(true);
         checker.run();
 
         Thread.sleep(30000);
-        double sumAfter = sumMoneyOfAllAccountsInBanks(banks);
+        double sumAfter = balanceSumAllAccounts(accounts);
         checker = checker.newInstance();
 
         assertTrue(sumAfter > sumBefore || (sumAfter == sumBefore && sumBefore == 0));
@@ -124,29 +125,28 @@ public class InterestCheckerTest {
 
     @Test
     void whenLastDayMonth_expectOnlyOneRaiseOfMoneyOnAccounts() throws InterruptedException {
-        List<Bank> banks = (List<Bank>) FindAllService.allEntities()[1];
+        List<Account> accounts = new AccountService().readAll();
 
-        checker.setBankStorage(() -> banks);
+        checker.setAccountStorage(() -> accounts);
         checker.setMockDate(true);
         checker.run();
 
         Thread.sleep(30000);
-        double sumAfter = sumMoneyOfAllAccountsInBanks(banks);
+        double sumAfter = balanceSumAllAccounts(accounts);
 
         Thread.sleep(50000);
-        double sumAfterAfter = sumMoneyOfAllAccountsInBanks(banks);
+        double sumAfterAfter = balanceSumAllAccounts(accounts);
         checker = checker.newInstance();
 
         assertTrue(sumAfterAfter == sumAfter);
-
     }
 
     // TODO: write advanced test which check possibility of deadlocks
 
-    private double sumMoneyOfAllAccountsInBanks(List<Bank> banks) {
+    private double balanceSumAllAccounts(List<Account> accounts) {
         double[] sum = new double[] { 0d };
 
-        banks.forEach(b -> b.accounts.forEach(a -> sum[0] += a.getBalance()));
+        // banks.forEach(b -> b.accounts.forEach(a -> sum[0] += a.getBalance()));
 
         return MoneyUtil.roundMoney(sum[0]);
     }

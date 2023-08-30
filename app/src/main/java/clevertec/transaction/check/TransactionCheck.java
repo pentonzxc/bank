@@ -16,10 +16,10 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class TransactionCheck {
     private UUID id;
-    private LocalDateTime dateTime;
+    private LocalDateTime createdAt;
     private ActionDescription description;
     private Account origin;
-    private Optional<Account> target = Optional.empty();
+    private Account target;
     private double transferAmount;
 
     // /**
@@ -72,16 +72,16 @@ public class TransactionCheck {
      * 
      * @return LocalDateTime
      */
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     /**
      * 
      * @param dateTime
      */
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setCreatedAt(LocalDateTime dateTime) {
+        this.createdAt = dateTime;
     }
 
     /**
@@ -99,12 +99,12 @@ public class TransactionCheck {
         this.origin = origin;
     }
 
-    public Optional<Account> getTarget() {
+    public Account getTarget() {
         return target;
     }
 
     public void setTarget(Account target) {
-        this.target = Optional.ofNullable(target);
+        this.target = target;
     }
 
     /**

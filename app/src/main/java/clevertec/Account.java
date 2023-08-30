@@ -23,10 +23,6 @@ public class Account {
 
     private User user;
 
-    private List<TransactionCheck> whereOrigin;
-
-    private List<TransactionCheck> whereTarget;
-
     private String currency;
 
     private LocalDateTime openingDate = LocalDateTime.now();
@@ -114,6 +110,8 @@ public class Account {
         this.balance = roundMoney(money);
     }
 
+
+    
     /**
      * @return Bank
      */
@@ -181,22 +179,6 @@ public class Account {
         return copy;
     }
 
-    public List<TransactionCheck> getWhereOrigin() {
-        return whereOrigin;
-    }
-
-    public void setWhereOrigin(List<TransactionCheck> whereOrigin) {
-        this.whereOrigin = whereOrigin;
-    }
-
-    public List<TransactionCheck> getWhereTarget() {
-        return whereTarget;
-    }
-
-    public void setWhereTarget(List<TransactionCheck> whereTarget) {
-        this.whereTarget = whereTarget;
-    }
-
     public String getCurrency() {
         return currency;
     }
@@ -212,8 +194,5 @@ public class Account {
     public void setOpeningDate(LocalDateTime openingDate) {
         this.openingDate = openingDate;
     }
-
-
-    
 
 }

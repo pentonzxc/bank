@@ -39,7 +39,7 @@ public class InterestChecker {
 
     private ScheduledFuture<Void> interestTask;
 
-    private Supplier<List<Bank>> bankStorage;
+    private Supplier<List<Account>> accountStorage;
 
     protected InterestChecker(int threadsCount, boolean daemon) {
         if (daemon) {
@@ -112,18 +112,18 @@ public class InterestChecker {
         System.out.println(working && isTodayLastDayOfMonth());
         try {
             if (working && isTodayLastDayOfMonth()) {
-                List<Bank> banks = bankStorage.get();
-                for (Bank bank : banks) {
-                    for (Account account : bank.getAccounts()) {
-                        synchronized (account.getLock()) {
-                            account.addPercent(INTEREST_PERCENT);
-                        }
+                List<Account> accounts = accountStorage.get();
+                for (Account account : accounts) {
+                    synchronized (account.getLock()) {
+                        account.addPercent(INTEREST_PERCENT);
                     }
                 }
                 threadPool.schedule(this::resumeCheckInterest, RESUME_WORK_DELAY, TimeUnit.MILLISECONDS);
                 working = false;
             }
-        } catch (Exception e) {
+        } catch (
+
+        Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -132,28 +132,19 @@ public class InterestChecker {
         working = true;
     }
 
-    
-    /** 
+    /**
      * @return boolean
      */
     protected boolean isTodayLastDayOfMonth() {
         return DateUtil.isTodayLastDayOfMonth();
     }
 
-    
-    /** 
-     * @return Supplier<List<Bank>>
-     */
-    public Supplier<List<Bank>> getBankStorage() {
-        return bankStorage;
+    public Supplier<List<Account>> getAccountStorage() {
+        return accountStorage;
     }
 
-    
-    /** 
-     * @param bankStorage
-     */
-    public void setBankStorage(Supplier<List<Bank>> bankStorage) {
-        this.bankStorage = bankStorage;
+    public void setAccountStorage(Supplier<List<Account>> accountStorage) {
+        this.accountStorage = accountStorage;
     }
 
     /**
