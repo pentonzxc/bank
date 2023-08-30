@@ -181,4 +181,39 @@ public class Account {
         return copy;
     }
 
+    public List<TransactionCheck> getWhereOrigin() {
+        return whereOrigin;
+    }
+
+    public void setWhereOrigin(List<TransactionCheck> whereOrigin) {
+        this.whereOrigin = whereOrigin;
+    }
+
+    public List<TransactionCheck> getWhereTarget() {
+        return whereTarget;
+    }
+
+    public void setWhereTarget(List<TransactionCheck> whereTarget) {
+        this.whereTarget = whereTarget;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public LocalDateTime getOpeningDate() {
+        return openingDate;
+    }
+
+    public void setOpeningDate(LocalDateTime openingDate) {
+        this.openingDate = openingDate;
+    }
+
+
+    
+
 }

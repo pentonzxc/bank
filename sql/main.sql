@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS user_(
 CREATE TABLE IF NOT EXISTS account(
                     id SERIAL PRIMARY KEY,
                     balance NUMERIC DEFAULT 0,
+                    opening_date TIMESTAMP NOT NULL,
+                    account_number TEXT UNIQUE NOT NULL,
+                    currency VARCHAR(3) NOT NULL,
                     user_id INT NOT NULL,
                     bank_id INT NOT NULL,
                     CONSTRAINT fk_user
@@ -27,10 +30,10 @@ CREATE TABLE IF NOT EXISTS transaction_(
                    begin_date TIMESTAMP NOT NULL,
                    end_date TIMESTAMP NOT NULL,
                    origin_account_id INT NOT NULL,
-                   target_account_id INT,
+                   target_account_id INT NOT NULL,
                    CONSTRAINT fk_origin_account
-                        FOREIGN KEY(origin_account_id) REFERENCES user_(id),
+                        FOREIGN KEY(origin_account_id) REFERENCES account(id),
                     CONSTRAINT fk_target_account
-                        FOREIGN KEY(target_account_id) REFERENCES user_(id)
+                        FOREIGN KEY(target_account_id) REFERENCES account(id)
 
 );
