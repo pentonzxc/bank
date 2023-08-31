@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import clevertec.Account;
 import clevertec.Bank;
@@ -18,9 +19,19 @@ import clevertec.transaction.check.TransactionCheck;
 
 public class AccountService {
 
-    BankService bankService = new BankService();
+    BankService bankService;
 
-    UserService userService = new UserService();
+    UserService userService;
+
+    public AccountService() {
+        this.bankService = new BankService();
+        this.userService = new UserService();
+    }
+
+    public AccountService(BankService bankService, UserService userService) {
+        this.bankService = bankService;
+        this.userService = userService;
+    }
 
     public int create(Account account) {
         String query = "INSERT INTO account(account_number, balance ,currency , opening_date, bank_id, user_id) VALUES (? , ? , ? , ? , ? , ?)";
@@ -61,7 +72,7 @@ public class AccountService {
             ps.setString(1, account.getAccountNumber());
             ps.setDouble(2, account.getBalance());
             ps.setString(3, account.getCurrency());
-            ps.setTimestamp(4, Timestamp.valueOf(account.getOpeningDate()));
+            ps.setTimestamp(4, null);
             ps.setInt(5, account.getBank().getId());
             ps.setInt(6, account.getUser().getId());
 

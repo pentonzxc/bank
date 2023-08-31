@@ -17,10 +17,18 @@ import clevertec.transaction.check.TransactionCheck;
 
 public class TransactionService {
 
-    AccountService accountService = new AccountService();
+    AccountService accountService;
+
+    public TransactionService() {
+        this.accountService = new AccountService();
+    }
+
+    public TransactionService(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     public UUID create(TransactionCheck check) {
-        String query = "INSERT INTO transaction_(transfer_amount, description, finished_date, origin_account_id , target_account_id) VALUES (? , ? , ?, ? , ?)";
+        String query = "INSERT INTO transaction_(transfer_amount, description, created_at, origin_account_id , target_account_id) VALUES (? , ? , ?, ? , ?)";
 
         UUID id = null;
 
@@ -47,7 +55,7 @@ public class TransactionService {
 
     public boolean update(TransactionCheck check) {
         String query = """
-                UPDATE transaction_ SET transfer_amount = ?, description = ?, finished_date = ?, origin_account_id = ?, target_account_id = ? WHERE ID = ?
+                UPDATE transaction_ SET transfer_amount = ?, description = ?, created_at = ?, origin_account_id = ?, target_account_id = ? WHERE ID = ?
                 """;
 
         try (Connection con = DatabaseConfig.getConnecion();
@@ -79,7 +87,7 @@ public class TransactionService {
                     check.setTransferAmount(rs.getInt("transfer_amount"));
                     check.setDescription(
                             TransactionDescription.fromDescription(rs.getString("description")).get());
-                    check.setCreatedAt(rs.getTimestamp("finished_date").toLocalDateTime());
+                    check.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     check.setOrigin(accountService.read(rs.getInt("origin_account_id")));
                     check.setTarget(accountService.read(rs.getInt("target_account_id")));
                 }
@@ -115,7 +123,7 @@ public class TransactionService {
                     check.setTransferAmount(rs.getInt("transfer_amount"));
                     check.setDescription(
                             TransactionDescription.fromDescription(rs.getString("description")).get());
-                    check.setCreatedAt(rs.getTimestamp("finished_date").toLocalDateTime());
+                    check.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     int origin_account_id = rs.getInt("origin_account_id");
                     int target_account_id = rs.getInt("target_account_id");
                     origin = accounts.getOrDefault(origin_account_id, null);
@@ -166,7 +174,7 @@ public class TransactionService {
                     check.setDescription(
                             TransactionDescription.fromDescription(rs.getString("description")).get());
                     check.setId(rs.getObject("id", UUID.class));
-                    check.setCreatedAt(rs.getTimestamp("finished_date").toLocalDateTime());
+                    check.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                     int origin_account_id = rs.getInt("origin_account_id");
                     int target_account_id = rs.getInt("target_account_id");
                     origin = accounts.getOrDefault(origin_account_id, null);
@@ -213,7 +221,7 @@ public class TransactionService {
                 check.setTransferAmount(rs.getInt("transfer_amount"));
                 check.setDescription(
                         TransactionDescription.fromDescription(rs.getString("description")).get());
-                check.setCreatedAt(rs.getTimestamp("finished_date").toLocalDateTime());
+                check.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                 int origin_account_id = rs.getInt("origin_account_id");
                 int target_account_id = rs.getInt("target_account_id");
                 origin = accounts.getOrDefault(origin_account_id, null);

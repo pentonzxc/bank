@@ -32,6 +32,7 @@ import clevertec.transaction.TransactionComputation;
 import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionPrinterFactory;
+import clevertec.util.ObjectMapperUtil;
 
 public class App {
 
@@ -42,7 +43,10 @@ public class App {
      * @throws IOException
      */
     public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
-        pdf();
+        // pdf();
+        var mapper = ObjectMapperUtil.get();
+        String value = mapper.writeValueAsString(LocalDateTime.now());
+        System.out.println(mapper.readValue(value, LocalDateTime.class));
     }
 
     static public void pdf() throws IOException {
@@ -102,68 +106,6 @@ public class App {
                 acc1,
                 LocalDate.parse("01.01.2020", DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 LocalDate.parse("05.05.2021", DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-
-        // Bank bank = new Bank("Clevertec-Bank");
-        // User user = new User("Nikolai", "Urusov", LocalDate.now().toString());
-        // account.setBank(bank);
-        // account.setUser(user);
-        // account.setId(228);
-        // account.setCurrency("BYN");
-        // account.setOpeningDate(LocalDateTime.parse("2018-01-01T10:05:07"));
-        // account.setBalance(100.22556);
-        // account.setAccountNumber("SASD-228");
-
-        // LocalDate begin = LocalDate.parse("2020-09-20");
-        // LocalDate end = LocalDate.parse("2020-10-05");
-
-        // System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.YYYY")));
-        // System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.YYYY,
-        // HH.mm")));
-
-        // UserService.generateBankAccountStatement(account, begin, end);
-
-        // File file = new File("test.pdf");
-        // PDDocument pdf = new PDDocument();
-        // pdf.addPage(new PDPage());
-
-        // PDPage page = pdf.getPage(0);
-
-        // PDFont font = PDType1Font.HELVETICA_BOLD;
-        // int fontSize = 12;
-
-        // PDPageContentStream contentStream = new PDPageContentStream(pdf, page,
-        // PDPageContentStream.AppendMode.APPEND,
-        // true, true);
-
-        // contentStream.setFont(font, fontSize);
-
-        // Function<String, Float> lengthOfWord = str -> {
-        // try {
-        // // no comments :\
-        // return font.getStringWidth(str) / 1000 * fontSize - 6;
-        // } catch (IOException e) {
-        // throw new RuntimeException(e);
-        // }
-        // };
-        // var y = page.getMediaBox().getUpperRightY();
-
-        // var date = "1920-01-01";
-        // var label = "Date";
-
-        // contentStream.beginText();
-        // contentStream.newLineAtOffset(0, y - 50);
-        // contentStream.showText(date);
-        // contentStream.endText();
-
-        // contentStream.beginText();
-        // contentStream.newLineAtOffset(lengthOfWord.apply(date) / 2 -
-        // lengthOfWord.apply(label) / 2, y - 100);
-        // contentStream.showText(label);
-        // contentStream.endText();
-
-        // contentStream.close();
-
-        // pdf.save(file);
     }
 
     static public void example1() {

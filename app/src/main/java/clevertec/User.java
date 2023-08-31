@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 /**
  * Class that represents owner of account(s) in bank(s).
  */
+
+@NoArgsConstructor
 public class User {
     private Integer id;
 
@@ -18,15 +20,6 @@ public class User {
     private String lastName;
 
     private String birthDate;
-
-    private Set<Account> accounts;
-
-    /**
-     * Create empty user.
-     */
-    public User() {
-        accounts = new HashSet<>();
-    }
 
     /**
      * Create user.
@@ -38,19 +31,9 @@ public class User {
     public User(String firstName,
             String lastName,
             String birthDate) {
-        this();
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
-    }
-
-    /**
-     * Add account
-     * 
-     * @param acc
-     */
-    public void addAccount(Account acc) {
-        accounts.add(acc);
     }
 
     /**
@@ -107,20 +90,6 @@ public class User {
      */
     public void setBirthDate(String birthDate) {
         this.birthDate = birthDate;
-    }
-
-    /**
-     * @return Set<Account>
-     */
-    public Set<Account> getAccounts() {
-        return accounts;
-    }
-
-    /**
-     * @param accounts
-     */
-    public void setAccounts(Set<Account> accounts) {
-        this.accounts = accounts;
     }
 
 }

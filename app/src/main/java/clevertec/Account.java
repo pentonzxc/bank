@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import clevertec.transaction.check.TransactionCheck;
 import lombok.NoArgsConstructor;
 
@@ -25,10 +28,11 @@ public class Account {
 
     private String currency;
 
-    private LocalDateTime openingDate = LocalDateTime.now();
+    private LocalDateTime openingDate;
 
-    private String accountNumber = UUID.randomUUID().toString();
+    private String accountNumber;
 
+    @JsonIgnore
     private final Object lock = new Object();
 
     /**
@@ -110,8 +114,6 @@ public class Account {
         this.balance = roundMoney(money);
     }
 
-
-    
     /**
      * @return Bank
      */
@@ -173,6 +175,8 @@ public class Account {
         copy.setId(id);
         copy.setBank(bank);
         copy.setAccountNumber(accountNumber);
+        copy.setOpeningDate(openingDate);
+        copy.setCurrency(currency);
         copy.setUser(user);
         copy.setBalance(balance);
 
