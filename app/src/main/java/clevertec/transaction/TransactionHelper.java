@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import clevertec.Account;
-import clevertec.transaction.check.ActionDescription;
+import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionPrinter;
 import clevertec.transaction.check.TransactionPrinterFactory;
@@ -54,12 +54,12 @@ public class TransactionHelper {
                 Account aux) {
             if ((direction == ActionDirection.ACCOUNT_TRANSFER || main.getId() == aux.getId())
                     && type == ActionType.ADD) {
-                check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
+                check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
             } else if ((direction == ActionDirection.ACCOUNT_TRANSFER || main.getId() == aux.getId())
                     && type == ActionType.SUB) {
-                check.setDescription(ActionDescription.ACCOUNT_TRANSFER_SUB);
+                check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
             } else if (direction == ActionDirection.ACCOUNT_ACCOUNT_TRANSFER) {
-                check.setDescription(ActionDescription.ACCOUNT_ACCOUNT_TRANSFER);
+                check.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
             } else {
                 log.debug("TransactionHelper resolveMoneyDirectionInPlace receive illegal ActionDirection :: "
                         + direction);
@@ -86,18 +86,18 @@ public class TransactionHelper {
          */
         static void resolveAndSetOriginAndTargetInPlace(
                 @NonNull TransactionCheck check,
-                @NonNull ActionDescription description,
+                @NonNull TransactionDescription description,
                 @NonNull ActionType type,
                 @NonNull Account main,
                 Account aux) {
-            if (description == ActionDescription.ACCOUNT_TRANSFER_ADD
-                    || description == ActionDescription.ACCOUNT_TRANSFER_SUB) {
+            if (description == TransactionDescription.ACCOUNT_TRANSFER_ADD
+                    || description == TransactionDescription.ACCOUNT_TRANSFER_SUB) {
                 check.setOrigin(main);
                 check.setTarget(main);
-            } else if (description == ActionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.ADD) {
+            } else if (description == TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.ADD) {
                 check.setOrigin(aux);
                 check.setTarget(main);
-            } else if (description == ActionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.SUB) {
+            } else if (description == TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.SUB) {
                 check.setOrigin(main);
                 check.setTarget(aux);
             }

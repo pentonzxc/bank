@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 import clevertec.Account;
 import clevertec.service.AccountService;
 import clevertec.service.UserService;
-import clevertec.transaction.check.ActionDescription;
+import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.util.Pair;
 
@@ -181,7 +181,7 @@ public class TransactionTests {
 
             runner2.transfer(TransactionAction.from(ActionType.ADD, 9));
 
-            assertEquals(expected2 , acc1.getBalance());
+            assertEquals(expected2, acc1.getBalance());
 
         }
 

@@ -41,7 +41,7 @@ public class StringTransactionPrinterTest {
         TransactionCheck check = new TransactionCheck();
 
         check.setCreatedAt(LocalDateTime.parse("2023-08-26T17:43:25", DateTimeFormatter.ISO_DATE_TIME));
-        check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
+        check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
         check.setId(UUID.fromString("c916bfac-b3ec-48d7-8116-bedaa81f9a6f"));
         Account acc1 = new Account();
         Account acc2 = new Account();
@@ -84,7 +84,7 @@ public class StringTransactionPrinterTest {
         TransactionCheck check = new TransactionCheck();
 
         check.setCreatedAt(LocalDateTime.parse("2023-08-26T17:43:25", DateTimeFormatter.ISO_DATE_TIME));
-        check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
+        check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
         Account acc1 = new Account();
 
         check.setId(UUID.fromString("c916bfac-b3ec-48d7-8116-bedaa81f9a6f"));

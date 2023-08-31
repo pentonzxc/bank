@@ -54,7 +54,7 @@ public class TransactionPrinterFactory {
                 newLineInPlace(result);
 
                 result = generateRow(result, TransactionTypeLabel, check.getDescription(),
-                        ActionDescription::getDescription);
+                        TransactionDescription::description);
                 newLineInPlace(result);
 
                 result = generateRow(result, OriginBankLabel, check.getOrigin().getBank().getName(),

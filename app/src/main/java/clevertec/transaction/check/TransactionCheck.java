@@ -17,7 +17,7 @@ import lombok.NonNull;
 public class TransactionCheck {
     private UUID id;
     private LocalDateTime createdAt;
-    private ActionDescription description;
+    private TransactionDescription description;
     private Account origin;
     private Account target;
     private double transferAmount;
@@ -117,14 +117,14 @@ public class TransactionCheck {
     /**
      * @return ActionDescription
      */
-    public ActionDescription getDescription() {
+    public TransactionDescription getDescription() {
         return description;
     }
 
     /**
      * @param description
      */
-    public void setDescription(ActionDescription description) {
+    public void setDescription(TransactionDescription description) {
         this.description = description;
     }
 

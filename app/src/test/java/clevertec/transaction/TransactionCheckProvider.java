@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 import clevertec.Account;
 import clevertec.Bank;
-import clevertec.transaction.check.ActionDescription;
+import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionCheck;
 
 public class TransactionCheckProvider implements ArgumentsProvider {
@@ -48,7 +48,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setOrigin(acc2);
         check.setTarget(acc1);
         check.setTransferAmount(change);
-        check.setDescription(ActionDescription.ACCOUNT_ACCOUNT_TRANSFER);
+        check.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
 
         Transaction transaction = new Transaction(acc1, acc2);
         TransactionAction transactionAction = TransactionAction.from(ActionType.ADD, change);
@@ -75,7 +75,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setOrigin(acc1);
         check.setTarget(acc2);
         check.setTransferAmount(change);
-        check.setDescription(ActionDescription.ACCOUNT_ACCOUNT_TRANSFER);
+        check.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
 
         Transaction transaction = new Transaction(acc1, acc2);
         TransactionAction transactionAction = TransactionAction.from(ActionType.SUB, change);
@@ -97,7 +97,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setOrigin(acc1);
         check.setTarget(acc1);
         check.setTransferAmount(change);
-        check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
+        check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
 
         Transaction transaction = new Transaction(acc1, acc1);
         TransactionAction transactionAction = TransactionAction.from(ActionType.ADD, change);
@@ -119,7 +119,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setOrigin(acc1);
         check.setTarget(acc1);
         check.setTransferAmount(change);
-        check.setDescription(ActionDescription.ACCOUNT_TRANSFER_SUB);
+        check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
 
         Transaction transaction = new Transaction(acc1, acc1);
         TransactionAction transactionAction = TransactionAction.from(ActionType.SUB, change);
@@ -141,7 +141,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setOrigin(acc1);
         check.setTarget(acc1);
         check.setTransferAmount(change);
-        check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
+        check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
 
         Transaction transaction = new Transaction(acc1);
         TransactionAction transactionAction = TransactionAction.from(ActionType.ADD, change);
@@ -163,7 +163,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setOrigin(acc1);
         check.setTarget(acc1);
         check.setTransferAmount(change);
-        check.setDescription(ActionDescription.ACCOUNT_TRANSFER_SUB);
+        check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
 
         Transaction transaction = new Transaction(acc1);
         TransactionAction transactionAction = TransactionAction.from(ActionType.SUB, change);

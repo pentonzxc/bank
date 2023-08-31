@@ -3,21 +3,33 @@
  */
 package clevertec;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import clevertec.account_interest.scheduler.InterestChecker;
 import clevertec.account_interest.scheduler.InterestCheckerFactory;
-import clevertec.service.BankService;
+import clevertec.service.AccountService;
+import clevertec.service.TransactionService;
+import clevertec.service.UserService;
 import clevertec.transaction.ActionType;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.TransactionAction;
 import clevertec.transaction.TransactionException;
 import clevertec.transaction.TransactionHelper;
 import clevertec.transaction.TransactionComputation;
-import clevertec.transaction.check.ActionDescription;
+import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionPrinterFactory;
 
@@ -27,16 +39,131 @@ public class App {
      * @param args
      * @throws InterruptedException
      * @throws ExecutionException
+     * @throws IOException
      */
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
-        var service = new BankService();
+    public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
+        pdf();
+    }
 
-        // int id = service.create(new Bank("ky"));
-        var bank = new Bank();
-        bank.setName("CHANGED");
-        bank.setId(10);
-        System.out.println(service.update(bank));
+    static public void pdf() throws IOException {
+        TransactionService transactionService = new TransactionService();
+        AccountService accountService = new AccountService();
+        var acc1 = accountService.read(1);
+        var acc2 = accountService.read(2);
 
+        // var check1 = new TransactionCheck();
+        // check1.setOrigin(acc1);
+        // check1.setTarget(acc2);
+        // check1.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
+        // check1.setId(UUID.randomUUID());
+        // check1.setTransferAmount(100);
+        // check1.setCreatedAt(LocalDate.parse("01.01.2015",
+        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay());
+
+        // var check2 = new TransactionCheck();
+        // check2.setOrigin(acc2);
+        // check2.setTarget(acc1);
+        // check2.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
+        // check2.setId(UUID.randomUUID());
+        // check2.setTransferAmount(50);
+        // check2.setCreatedAt(
+        // LocalDateTime
+        // .from(LocalDate.parse("15.02.2015",
+        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay()));
+
+        // var check3 = new TransactionCheck();
+        // check3.setOrigin(acc1);
+        // check3.setTarget(acc1);
+        // check3.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
+        // check3.setId(UUID.randomUUID());
+        // check3.setTransferAmount(30);
+        // check3.setCreatedAt(
+        // LocalDateTime
+        // .from(LocalDate.parse("10.10.2018",
+        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay()));
+
+        // var check4 = new TransactionCheck();
+        // check4.setOrigin(acc1);
+        // check4.setTarget(acc1);
+        // check4.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
+        // check4.setId(UUID.randomUUID());
+        // check4.setTransferAmount(90);
+        // check4.setCreatedAt(
+        // LocalDateTime
+        // .from(LocalDate.parse("12.12.2020",
+        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay()));
+
+        // transactionService.create(check1);
+        // transactionService.create(check2);
+        // transactionService.create(check3);
+        // transactionService.create(check4);
+
+        UserService.generateBankAccountStatement(
+                acc1,
+                LocalDate.parse("01.01.2020", DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                LocalDate.parse("05.05.2021", DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+
+        // Bank bank = new Bank("Clevertec-Bank");
+        // User user = new User("Nikolai", "Urusov", LocalDate.now().toString());
+        // account.setBank(bank);
+        // account.setUser(user);
+        // account.setId(228);
+        // account.setCurrency("BYN");
+        // account.setOpeningDate(LocalDateTime.parse("2018-01-01T10:05:07"));
+        // account.setBalance(100.22556);
+        // account.setAccountNumber("SASD-228");
+
+        // LocalDate begin = LocalDate.parse("2020-09-20");
+        // LocalDate end = LocalDate.parse("2020-10-05");
+
+        // System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.YYYY")));
+        // System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.YYYY,
+        // HH.mm")));
+
+        // UserService.generateBankAccountStatement(account, begin, end);
+
+        // File file = new File("test.pdf");
+        // PDDocument pdf = new PDDocument();
+        // pdf.addPage(new PDPage());
+
+        // PDPage page = pdf.getPage(0);
+
+        // PDFont font = PDType1Font.HELVETICA_BOLD;
+        // int fontSize = 12;
+
+        // PDPageContentStream contentStream = new PDPageContentStream(pdf, page,
+        // PDPageContentStream.AppendMode.APPEND,
+        // true, true);
+
+        // contentStream.setFont(font, fontSize);
+
+        // Function<String, Float> lengthOfWord = str -> {
+        // try {
+        // // no comments :\
+        // return font.getStringWidth(str) / 1000 * fontSize - 6;
+        // } catch (IOException e) {
+        // throw new RuntimeException(e);
+        // }
+        // };
+        // var y = page.getMediaBox().getUpperRightY();
+
+        // var date = "1920-01-01";
+        // var label = "Date";
+
+        // contentStream.beginText();
+        // contentStream.newLineAtOffset(0, y - 50);
+        // contentStream.showText(date);
+        // contentStream.endText();
+
+        // contentStream.beginText();
+        // contentStream.newLineAtOffset(lengthOfWord.apply(date) / 2 -
+        // lengthOfWord.apply(label) / 2, y - 100);
+        // contentStream.showText(label);
+        // contentStream.endText();
+
+        // contentStream.close();
+
+        // pdf.save(file);
     }
 
     static public void example1() {
@@ -76,7 +203,7 @@ public class App {
     static public String example3() {
         TransactionCheck c = new TransactionCheck();
         c.setCreatedAt(LocalDateTime.now());
-        c.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
+        c.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
         Account acc1 = new Account();
         acc1.setBank(new Bank("Bank1"));
         acc1.setAccountNumber("123");
