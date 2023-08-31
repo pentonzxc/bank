@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import clevertec.Account;
-import clevertec.transaction.check.ActionDescription;
+import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionPrinter;
 import clevertec.transaction.check.TransactionPrinterFactory;
@@ -52,12 +52,14 @@ public class TransactionHelper {
                 @NonNull ActionDirection direction,
                 @NonNull Account main,
                 Account aux) {
-            if ((direction == ActionDirection.ACCOUNT_TRANSFER || main == aux) && type == ActionType.ADD) {
-                check.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
-            } else if ((direction == ActionDirection.ACCOUNT_TRANSFER || main == aux) && type == ActionType.SUB) {
-                check.setDescription(ActionDescription.ACCOUNT_TRANSFER_SUB);
+            if ((direction == ActionDirection.ACCOUNT_TRANSFER || main.getId() == aux.getId())
+                    && type == ActionType.ADD) {
+                check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
+            } else if ((direction == ActionDirection.ACCOUNT_TRANSFER || main.getId() == aux.getId())
+                    && type == ActionType.SUB) {
+                check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
             } else if (direction == ActionDirection.ACCOUNT_ACCOUNT_TRANSFER) {
-                check.setDescription(ActionDescription.ACCOUNT_ACCOUNT_TRANSFER);
+                check.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
             } else {
                 log.debug("TransactionHelper resolveMoneyDirectionInPlace receive illegal ActionDirection :: "
                         + direction);
@@ -84,26 +86,20 @@ public class TransactionHelper {
          */
         static void resolveAndSetOriginAndTargetInPlace(
                 @NonNull TransactionCheck check,
-                @NonNull ActionDescription description,
+                @NonNull TransactionDescription description,
                 @NonNull ActionType type,
                 @NonNull Account main,
                 Account aux) {
-            if (description == ActionDescription.ACCOUNT_TRANSFER_ADD
-                    || description == ActionDescription.ACCOUNT_TRANSFER_SUB) {
-                check.setOriginAccountNumber(main.getAccountNumber());
-                check.setOriginBank(main.getBank().getName());
-                check.setTargetAccountNumber(main.getAccountNumber());
-                check.setTargetBank(main.getBank().getName());
-            } else if (description == ActionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.ADD) {
-                check.setOriginAccountNumber(aux.getAccountNumber());
-                check.setOriginBank(aux.getBank().getName());
-                check.setTargetAccountNumber(main.getAccountNumber());
-                check.setTargetBank(main.getBank().getName());
-            } else if (description == ActionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.SUB) {
-                check.setOriginAccountNumber(main.getAccountNumber());
-                check.setOriginBank(main.getBank().getName());
-                check.setTargetAccountNumber(aux.getAccountNumber());
-                check.setTargetBank(aux.getBank().getName());
+            if (description == TransactionDescription.ACCOUNT_TRANSFER_ADD
+                    || description == TransactionDescription.ACCOUNT_TRANSFER_SUB) {
+                check.setOrigin(main);
+                check.setTarget(main);
+            } else if (description == TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.ADD) {
+                check.setOrigin(aux);
+                check.setTarget(main);
+            } else if (description == TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.SUB) {
+                check.setOrigin(main);
+                check.setTarget(aux);
             }
         }
 
@@ -119,7 +115,7 @@ public class TransactionHelper {
          */
         public static File saveAsFile(@NonNull TransactionCheck check,
                 @NonNull TransactionPrinter<String> printer) {
-            String fileName = check.getId() + "|" + DateUtil.dateTimeToStringWithoutSeconds(check.getDateTime());
+            String fileName = check.getId() + "|" + DateUtil.dateTimeToStringWithoutSeconds(check.getCreatedAt());
             try {
                 return Files.writeString(
                         Path.of(CHECK_DIR_PATH, fileName),

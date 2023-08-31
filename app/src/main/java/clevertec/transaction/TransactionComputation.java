@@ -2,6 +2,7 @@ package clevertec.transaction;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -17,17 +18,24 @@ import clevertec.transaction.check.TransactionPrinterFactory;
  */
 public class TransactionComputation {
 
-    private String id;
-
     private final Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction;
 
-    private final Supplier<String> transactionId;
+    private final Supplier<UUID> transactionId;
+    private final Supplier<LocalDateTime> transactionFinishedAtDateTime;
+    private final Consumer<Boolean> completeTransaction;
+
+    volatile private boolean completed;
 
     TransactionComputation(
             Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction,
-            Supplier<String> transactionId) {
+            Supplier<UUID> transactionId,
+            Supplier<LocalDateTime> transactionFinishedAtDateTime,
+            Consumer<Boolean> completeTransaction) {
         this.transaction = transaction;
         this.transactionId = transactionId;
+        this.transactionFinishedAtDateTime = transactionFinishedAtDateTime;
+        this.completeTransaction = completeTransaction;
+        completed = false;
     }
 
     private Function<TransactionAction, BiFunction<Account, Account, TransactionCheck>> doTransfer = (
@@ -38,7 +46,7 @@ public class TransactionComputation {
                 double change = action.getTransferAmount();
                 double success = 0;
 
-                if (aux == null) {
+                if (main.getId() == aux.getId()) {
                     if (actionType == ActionType.ADD) {
                         main.addMoney(change);
                     } else {
@@ -57,11 +65,18 @@ public class TransactionComputation {
                     actionDirection = ActionDirection.ACCOUNT_ACCOUNT_TRANSFER;
                 }
 
-                check.setDateTime(LocalDateTime.now(ZoneId.systemDefault()));
+                check.setCreatedAt(LocalDateTime.now(ZoneId.systemDefault()));
                 check.setTransferAmount(change);
-                TransactionHelper.Check.resolveAndSetActionDescriptionInPlace(check, actionType, actionDirection, main,
+                TransactionHelper.Check.resolveAndSetActionDescriptionInPlace(
+                        check,
+                        actionType,
+                        actionDirection,
+                        main,
                         aux);
-                TransactionHelper.Check.resolveAndSetOriginAndTargetInPlace(check, check.getDescription(), actionType,
+                TransactionHelper.Check.resolveAndSetOriginAndTargetInPlace(
+                        check,
+                        check.getDescription(),
+                        actionType,
                         main,
                         aux);
 
@@ -81,17 +96,21 @@ public class TransactionComputation {
      */
     public TransactionCheck transfer(TransactionAction action, boolean saveCheck) throws TransactionException {
         try {
-            if (id != null) {
+            if (completed) {
                 throw new TransactionRuntimeException("Can't run twice the same transaction");
             }
             TransactionCheck check = transaction.apply(doTransfer.apply(action));
-            this.setId(transactionId.get());
+            check.setId(transactionId.get());
+            check.setCreatedAt(transactionFinishedAtDateTime.get());
             if (saveCheck) {
                 TransactionHelper.Check.saveAsFile(check, TransactionPrinterFactory.stringPrinter());
             }
             return check;
         } catch (TransactionRuntimeException ex) {
             throw new TransactionException(ex);
+        } finally {
+            completeTransaction.accept(true);
+            completed = true;
         }
     }
 
@@ -99,8 +118,8 @@ public class TransactionComputation {
         return transfer(action, false);
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public boolean isCompleted() {
+        return completed;
     }
 
 }

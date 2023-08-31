@@ -2,7 +2,9 @@ package clevertec.transaction.check;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
+import clevertec.Account;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -11,51 +13,50 @@ import lombok.NonNull;
  * Check for {@link Transaction}.
  */
 @NoArgsConstructor
+@AllArgsConstructor
 public class TransactionCheck {
-    private String id;
-    private LocalDateTime dateTime;
-    private ActionDescription description;
-    private String originBank;
-    private String originAccountNumber;
-    private Optional<String> targetBank = Optional.empty();
-    private Optional<String> targetAccountNumber = Optional.empty();
+    private UUID id;
+    private LocalDateTime createdAt;
+    private TransactionDescription description;
+    private Account origin;
+    private Account target;
     private double transferAmount;
 
-    /**
-     * 
-     * @param id                  - identification for check
-     * @param dateTime            - time when transaction over
-     * @param description         - {@link ActionDescription}
-     * @param originBank          - bank name that made transaction
-     * @param originAccountNumber - origin bank account number
-     * @param targetBank          - bank name to which the money was transferred
-     * @param targetAccountNumber - target bank account number
-     * @param transferAmount      - amount transferred in the transaction
-     */
-    public TransactionCheck(
-            @NonNull String id,
-            @NonNull LocalDateTime dateTime,
-            @NonNull ActionDescription description,
-            @NonNull String originBank,
-            @NonNull String originAccountNumber,
-            @NonNull Optional<String> targetBank,
-            @NonNull Optional<String> targetAccountNumber,
-            double transferAmount) {
-        this.id = id;
-        this.dateTime = dateTime;
-        this.description = description;
-        this.originBank = originBank;
-        this.originAccountNumber = originAccountNumber;
-        this.targetBank = targetBank;
-        this.targetAccountNumber = targetAccountNumber;
-        this.transferAmount = transferAmount;
-    }
+    // /**
+    // *
+    // * @param id - identification for check
+    // * @param dateTime - time when transaction over
+    // * @param description - {@link ActionDescription}
+    // * @param originBank - bank name that made transaction
+    // * @param originAccountNumber - origin bank account number
+    // * @param targetBank - bank name to which the money was transferred
+    // * @param targetAccountNumber - target bank account number
+    // * @param transferAmount - amount transferred in the transaction
+    // */
+    // public TransactionCheck(
+    // @NonNull UUID id,
+    // @NonNull LocalDateTime dateTime,
+    // @NonNull ActionDescription description,
+    // @NonNull String originBank,
+    // @NonNull String originAccountNumber,
+    // @NonNull Optional<String> targetBank,
+    // @NonNull Optional<String> targetAccountNumber,
+    // double transferAmount) {
+    // this.id = id;
+    // this.dateTime = dateTime;
+    // this.description = description;
+    // this.originBank = originBank;
+    // this.originAccountNumber = originAccountNumber;
+    // this.targetBank = targetBank;
+    // this.targetAccountNumber = targetAccountNumber;
+    // this.transferAmount = transferAmount;
+    // }
 
     /**
      * 
      * @return id
      */
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -63,7 +64,7 @@ public class TransactionCheck {
      * 
      * @param id
      */
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -71,72 +72,16 @@ public class TransactionCheck {
      * 
      * @return LocalDateTime
      */
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     /**
      * 
      * @param dateTime
      */
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    /**
-     * @return
-     */
-    public String getOriginBank() {
-        return originBank;
-    }
-
-    /**
-     * @param originBank
-     */
-    public void setOriginBank(String originBank) {
-        this.originBank = originBank;
-    }
-
-    /**
-     * @return Optional<String>
-     */
-    public Optional<String> getTargetBank() {
-        return targetBank;
-    }
-
-    /**
-     * @param targetBank
-     */
-    public void setTargetBank(String targetBank) {
-        this.targetBank = Optional.of(targetBank);
-    }
-
-    /**
-     * @return String
-     */
-    public String getOriginAccountNumber() {
-        return originAccountNumber;
-    }
-
-    /**
-     * @param originAccountNumber
-     */
-    public void setOriginAccountNumber(String originAccountNumber) {
-        this.originAccountNumber = originAccountNumber;
-    }
-
-    /**
-     * @return Optional<String>
-     */
-    public Optional<String> getTargetAccountNumber() {
-        return targetAccountNumber;
-    }
-
-    /**
-     * @param targetAccountNumber
-     */
-    public void setTargetAccountNumber(String targetAccountNumber) {
-        this.targetAccountNumber = Optional.of(targetAccountNumber);
+    public void setCreatedAt(LocalDateTime dateTime) {
+        this.createdAt = dateTime;
     }
 
     /**
@@ -144,6 +89,22 @@ public class TransactionCheck {
      */
     public double getTransferAmount() {
         return transferAmount;
+    }
+
+    public Account getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(Account origin) {
+        this.origin = origin;
+    }
+
+    public Account getTarget() {
+        return target;
+    }
+
+    public void setTarget(Account target) {
+        this.target = target;
     }
 
     /**
@@ -156,14 +117,14 @@ public class TransactionCheck {
     /**
      * @return ActionDescription
      */
-    public ActionDescription getDescription() {
+    public TransactionDescription getDescription() {
         return description;
     }
 
     /**
      * @param description
      */
-    public void setDescription(ActionDescription description) {
+    public void setDescription(TransactionDescription description) {
         this.description = description;
     }
 

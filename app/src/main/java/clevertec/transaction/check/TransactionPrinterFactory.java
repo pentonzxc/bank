@@ -5,6 +5,9 @@ import java.time.LocalTime;
 import java.util.Optional;
 import java.util.function.Function;
 
+import clevertec.Account;
+import clevertec.Bank;
+
 public class TransactionPrinterFactory {
     private TransactionPrinterFactory() {
     }
@@ -40,42 +43,36 @@ public class TransactionPrinterFactory {
                 result = generateHeaderRow(result, HeaderWord);
                 newLineInPlace(result);
 
-                result = generateRow(result, CheckIdLabel, check.getId(), Function.identity());
+                result = generateRow(result, CheckIdLabel, check.getId(), id -> id.toString());
                 newLineInPlace(result);
 
-                String mutDateLabel = check.getDateTime().toLocalDate().toString();
+                String mutDateLabel = check.getCreatedAt().toLocalDate().toString();
                 Function<LocalDateTime, LocalTime> f = LocalDateTime::toLocalTime;
                 Function<Object, String> g = Object::toString;
                 Function<String, String> z = time -> time.split("\\.")[0];
-                result = generateRow(result, mutDateLabel, check.getDateTime(), f.andThen(g).andThen(z));
+                result = generateRow(result, mutDateLabel, check.getCreatedAt(), f.andThen(g).andThen(z));
                 newLineInPlace(result);
 
                 result = generateRow(result, TransactionTypeLabel, check.getDescription(),
-                        ActionDescription::getDescription);
+                        TransactionDescription::description);
                 newLineInPlace(result);
 
-                result = generateRow(result, OriginBankLabel, check.getOriginBank(), Function.identity());
-                newLineInPlace(result);
-
-                Optional<String> targetBankOpt = check.getTargetBank();
-                if (targetBankOpt.isPresent()) {
-                    result = generateRow(result, TargetBankLabel, targetBankOpt, Optional::get);
-                } else {
-                    result = generateRow(result, TargetBankLabel, check.getOriginBank(), Function.identity());
-                }
-                newLineInPlace(result);
-
-                result = generateRow(result, OriginAccountNumberLabel, check.getOriginAccountNumber(),
+                result = generateRow(result, OriginBankLabel, check.getOrigin().getBank().getName(),
                         Function.identity());
                 newLineInPlace(result);
 
-                Optional<String> targetAccountNumberOpt = check.getTargetAccountNumber();
-                if (targetAccountNumberOpt.isPresent()) {
-                    result = generateRow(result, TargetAccountNumberLabel, targetAccountNumberOpt, Optional::get);
-                } else {
-                    result = generateRow(result, OriginAccountNumberLabel, check.getOriginAccountNumber(),
-                            Function.identity());
-                }
+                result = generateRow(result, TargetBankLabel, check.getTarget().getBank().getName(),
+                        Function.identity());
+
+                newLineInPlace(result);
+
+                result = generateRow(result, OriginAccountNumberLabel, check.getOrigin().getAccountNumber(),
+                        Function.identity());
+                newLineInPlace(result);
+
+                result = generateRow(result, TargetAccountNumberLabel, check.getTarget().getAccountNumber(),
+                        Function.identity());
+
                 newLineInPlace(result);
 
                 Function<Double, String> f1 = money -> String.format("%.2f", money).concat(" ").concat("BYN");

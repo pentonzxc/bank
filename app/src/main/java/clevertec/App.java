@@ -3,21 +3,36 @@
  */
 package clevertec;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import clevertec.account_interest.scheduler.InterestChecker;
 import clevertec.account_interest.scheduler.InterestCheckerFactory;
+import clevertec.service.AccountService;
+import clevertec.service.TransactionService;
+import clevertec.service.UserService;
 import clevertec.transaction.ActionType;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.TransactionAction;
 import clevertec.transaction.TransactionException;
 import clevertec.transaction.TransactionHelper;
 import clevertec.transaction.TransactionComputation;
-import clevertec.transaction.check.ActionDescription;
+import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionPrinterFactory;
+import clevertec.util.ObjectMapperUtil;
 
 public class App {
 
@@ -25,9 +40,72 @@ public class App {
      * @param args
      * @throws InterruptedException
      * @throws ExecutionException
+     * @throws IOException
      */
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
-        System.out.println("Hello world!");
+    public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
+        // pdf();
+        var mapper = ObjectMapperUtil.get();
+        String value = mapper.writeValueAsString(LocalDateTime.now());
+        System.out.println(mapper.readValue(value, LocalDateTime.class));
+    }
+
+    static public void pdf() throws IOException {
+        TransactionService transactionService = new TransactionService();
+        AccountService accountService = new AccountService();
+        var acc1 = accountService.read(1);
+        var acc2 = accountService.read(2);
+
+        // var check1 = new TransactionCheck();
+        // check1.setOrigin(acc1);
+        // check1.setTarget(acc2);
+        // check1.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
+        // check1.setId(UUID.randomUUID());
+        // check1.setTransferAmount(100);
+        // check1.setCreatedAt(LocalDate.parse("01.01.2015",
+        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay());
+
+        // var check2 = new TransactionCheck();
+        // check2.setOrigin(acc2);
+        // check2.setTarget(acc1);
+        // check2.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
+        // check2.setId(UUID.randomUUID());
+        // check2.setTransferAmount(50);
+        // check2.setCreatedAt(
+        // LocalDateTime
+        // .from(LocalDate.parse("15.02.2015",
+        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay()));
+
+        // var check3 = new TransactionCheck();
+        // check3.setOrigin(acc1);
+        // check3.setTarget(acc1);
+        // check3.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
+        // check3.setId(UUID.randomUUID());
+        // check3.setTransferAmount(30);
+        // check3.setCreatedAt(
+        // LocalDateTime
+        // .from(LocalDate.parse("10.10.2018",
+        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay()));
+
+        // var check4 = new TransactionCheck();
+        // check4.setOrigin(acc1);
+        // check4.setTarget(acc1);
+        // check4.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
+        // check4.setId(UUID.randomUUID());
+        // check4.setTransferAmount(90);
+        // check4.setCreatedAt(
+        // LocalDateTime
+        // .from(LocalDate.parse("12.12.2020",
+        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay()));
+
+        // transactionService.create(check1);
+        // transactionService.create(check2);
+        // transactionService.create(check3);
+        // transactionService.create(check4);
+
+        UserService.generateBankAccountStatement(
+                acc1,
+                LocalDate.parse("01.01.2020", DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                LocalDate.parse("05.05.2021", DateTimeFormatter.ofPattern("dd.MM.yyyy")));
     }
 
     static public void example1() {
@@ -64,51 +142,19 @@ public class App {
         System.out.println("After2 :: " + account2.getBalance());
     }
 
-    static public void example2() {
-        var bank = new Bank("example");
-        var user1 = new User("Kolya", "Urusov", "1990-02-23");
-        var user2 = new User("Pasha", "Urusov", "1990-02-23");
-        var account1 = new Account();
-
-        account1.setUser(user1);
-        account1.setBank(bank);
-        account1.setBalance(100);
-        var account2 = new Account();
-        account2.setUser(user2);
-        account2.setBank(bank);
-        account2.setBalance(100);
-        account1.setId(1);
-        account2.setId(2);
-
-        Transaction transaction = new Transaction(account1);
-        System.out.println("Before 1:: " + account1.getBalance());
-        System.out.println("Before 2:: " + account2.getBalance());
-
-        Transaction transaction2 = new Transaction(account2, account1);
-
-        try {
-            transaction.beginTransaction(
-                    new TransactionAction(ActionType.SUB, 5));
-            transaction2.beginTransaction(
-                    new TransactionAction(ActionType.ADD, 15));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        System.out.println("After1 :: " + account1.getBalance());
-        System.out.println("After2 :: " + account2.getBalance());
-
-    }
-
     static public String example3() {
         TransactionCheck c = new TransactionCheck();
-        c.setDateTime(LocalDateTime.now());
-        c.setDescription(ActionDescription.ACCOUNT_TRANSFER_ADD);
-        c.setId("123");
-        c.setOriginBank("Bank1");
-        c.setTargetBank("Bank2");
-        c.setOriginAccountNumber("123");
-        c.setTargetAccountNumber("1234");
+        c.setCreatedAt(LocalDateTime.now());
+        c.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
+        Account acc1 = new Account();
+        acc1.setBank(new Bank("Bank1"));
+        acc1.setAccountNumber("123");
+        Account acc2 = new Account();
+        acc2.setBank(new Bank("Bank 2"));
+        acc2.setAccountNumber("1234");
+        c.setId(UUID.randomUUID());
+        c.setOrigin(acc1);
+        c.setTarget(acc2);
         c.setTransferAmount(100);
 
         return TransactionPrinterFactory.stringPrinter().view(c);

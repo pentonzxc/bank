@@ -9,6 +9,7 @@ app/bin
 # some txt for local env :)
 ref.txt
 tips.txt
+*.pdf
 # python person txt generator
 # random_person_generator.py
 # persons.txt

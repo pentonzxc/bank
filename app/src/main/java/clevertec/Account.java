@@ -1,6 +1,15 @@
 package clevertec;
 
 import static clevertec.util.MoneyUtil.roundMoney;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import clevertec.transaction.check.TransactionCheck;
 import lombok.NoArgsConstructor;
 
 /**
@@ -17,8 +26,13 @@ public class Account {
 
     private User user;
 
-    private String accountNumber = "1";
+    private String currency;
 
+    private LocalDateTime openingDate;
+
+    private String accountNumber;
+
+    @JsonIgnore
     private final Object lock = new Object();
 
     /**
@@ -161,10 +175,28 @@ public class Account {
         copy.setId(id);
         copy.setBank(bank);
         copy.setAccountNumber(accountNumber);
+        copy.setOpeningDate(openingDate);
+        copy.setCurrency(currency);
         copy.setUser(user);
         copy.setBalance(balance);
 
         return copy;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public LocalDateTime getOpeningDate() {
+        return openingDate;
+    }
+
+    public void setOpeningDate(LocalDateTime openingDate) {
+        this.openingDate = openingDate;
     }
 
 }
