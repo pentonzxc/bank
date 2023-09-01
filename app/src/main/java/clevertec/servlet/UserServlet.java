@@ -1,13 +1,19 @@
 package clevertec.servlet;
 
+import static clevertec.servlet.RequestTemplates.delete;
+import static clevertec.servlet.RequestTemplates.get;
+import static clevertec.servlet.RequestTemplates.post;
+import static clevertec.servlet.RequestTemplates.put;
+
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import clevertec.bank.Bank;
 import clevertec.service.UserService;
 import clevertec.user.User;
 import clevertec.util.ObjectMapperUtil;
+import clevertec.util.Pair;
 import clevertec.util.RequestUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,67 +27,76 @@ public class UserServlet extends HttpServlet {
     UserService userService = new UserService();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (request.getPathInfo() != null) {
-            response.sendError(404);
-        } else {
-            String body = RequestUtil.getBody(request);
-            User user = objectMapper.readValue(body, User.class);
-            userService.create(user);
-        }
+       
+        post(
+            request,
+            response,
+            (req, resp) -> {
+                String body = RequestUtil.getBody(req);
+                User user;
+                try {
+                    user = objectMapper.readValue(body, User.class);
+                    userService.create(user);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            });
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Integer id = null;
-        boolean error = false;
-        try {
-            id = Integer.parseInt(request.getPathInfo().substring(1));
-        } catch (Exception ex) {
-            error = true;
-        }
-        if (error) {
-            response.sendError(404);
-        } else {
-            User user = userService.read(id);
+        
 
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(objectMapper.writeValueAsString(user));
-        }
+        get(
+            request,
+            response,
+            Integer::parseInt,
+            (id, pair_) -> {
+                Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
+                HttpServletResponse resp = pair.second();
+
+                User user = userService.read(id);
+
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                try {
+                    resp.getWriter().write(objectMapper.writeValueAsString(user));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
     }
 
-    public void doPut(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
-        Integer id = null;
-        boolean error = false;
-        try {
-            id = Integer.parseInt(request.getPathInfo().substring(1));
-        } catch (Exception ex) {
-            error = true;
-        }
-        if (error) {
-            response.sendError(404);
-        } else {
-            String body = RequestUtil.getBody(request);
-            User user = objectMapper.readValue(body, User.class);
+    
+    public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        put(
+            request,
+            response,
+            Integer::parseInt,
+            (id, pair_) -> {
+                Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
+                HttpServletRequest req = pair.first();
 
-            user.setId(id);
-            userService.update(user);
-        }
+                String body = RequestUtil.getBody(req);
+                User user;
+                try {
+                    user = objectMapper.readValue(body, User.class);
+                    user.setId(id);
+                    userService.update(user);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            });
     }
 
     public void doDelete(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
-        Integer id = null;
-        boolean error = false;
-        try {
-            id = Integer.parseInt(request.getPathInfo().substring(1));
-        } catch (Exception ex) {
-            error = true;
-        }
-        if (error) {
-            response.sendError(404);
-        } else {
-            userService.delete(id);
-        }
+       
+        delete(
+            request,
+            response,
+            Integer::parseInt,
+            (id, pair_) -> {
+                userService.delete(id);
+            });
     }
 }

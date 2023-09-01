@@ -9,12 +9,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static clevertec.servlet.RequestTemplates.get;
+import static clevertec.servlet.RequestTemplates.post;
+import static clevertec.servlet.RequestTemplates.put;
+import static clevertec.servlet.RequestTemplates.delete;
+import static clevertec.util.RequestUtil.getBody;
+
 import clevertec.account.Account;
 import clevertec.service.AccountService;
 import clevertec.service.TransactionService;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionDescription;
 import clevertec.util.ObjectMapperUtil;
+import clevertec.util.Pair;
 import clevertec.util.RequestUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,68 +34,69 @@ public class TransactionServlet {
     TransactionService transactionService = new TransactionService(accountService);
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (request.getPathInfo() != null) {
-            response.sendError(404);
-        } else {
-            String body = RequestUtil.getBody(request);
-            TransactionCheck transactionCheck = fromJson(body);
-            transactionService.create(transactionCheck);
-        }
+      
+        post(
+            request,
+            response,
+            (req, resp) -> {
+                String body = RequestUtil.getBody(req);
+                TransactionCheck transactionCheck = fromJson(body);
+                transactionService.create(transactionCheck);
+            });
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        UUID id = null;
-        boolean error = false;
-        try {
-            id = UUID.fromString(request.getPathInfo().substring(1));
-        } catch (Exception ex) {
-            error = true;
-        }
-        if (error) {
-            response.sendError(404);
-        } else {
-            TransactionCheck transactionCheck = transactionService.read(id);
+        
 
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(objectMapper.writeValueAsString(transactionCheck));
-        }
+        get(
+            request,
+            response,
+            UUID::fromString,
+            (id, pair_) -> {
+                Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
+                HttpServletResponse resp = pair.second();
+
+                TransactionCheck transactionCheck = transactionService.read(id);
+
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                try {
+                    resp.getWriter().write(objectMapper.writeValueAsString(transactionCheck));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
     }
 
     public void doPut(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
-        UUID id = null;
-        boolean error = false;
-        try {
-            id = UUID.fromString(request.getPathInfo().substring(1));
-        } catch (Exception ex) {
-            error = true;
-        }
-        if (error) {
-            response.sendError(404);
-        } else {
-            String body = RequestUtil.getBody(request);
-            TransactionCheck transactionCheck = fromJson(body);
+       
 
-            transactionCheck.setId(id);
-            transactionService.update(transactionCheck);
-        }
+        put(
+            request,
+            response,
+            UUID::fromString,
+            (id, pair_) -> {
+                Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
+                HttpServletRequest req = pair.first();
+
+                String body = RequestUtil.getBody(req);
+                TransactionCheck transactionCheck = fromJson(body);
+    
+                transactionCheck.setId(id);
+                transactionService.update(transactionCheck);
+            });
     }
 
     public void doDelete(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
-        UUID id = null;
-        boolean error = false;
-        try {
-            id = UUID.fromString(request.getPathInfo().substring(1));
-        } catch (Exception ex) {
-            error = true;
-        }
-        if (error) {
-            response.sendError(404);
-        } else {
-            transactionService.delete(id);
-        }
+        delete(
+            request,
+            response,
+            UUID::fromString,
+            (id, pair_) -> {
+                transactionService.delete(id);
+            });
     }
 
     public TransactionCheck fromJson(String json) {
