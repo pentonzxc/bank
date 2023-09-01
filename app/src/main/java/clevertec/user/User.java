@@ -1,25 +1,27 @@
 package clevertec.user;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 /**
  * Class that represents owner of account(s) in bank(s).
  */
 
+@Setter
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 public class User {
-    private Integer id;
+    Integer id;
 
-    private String firstName;
+    String firstName;
 
-    private String lastName;
+    String lastName;
 
-    private String birthDate;
+    String birthDate;
 
     /**
      * Create user.
@@ -35,61 +37,4 @@ public class User {
         this.lastName = lastName;
         this.birthDate = birthDate;
     }
-
-    /**
-     * @return Integer
-     */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     * @param id
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    /**
-     * @return String
-     */
-    public String getFirstName() {
-        return firstName;
-    }
-
-    /**
-     * @param firstName
-     */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    /**
-     * @return String
-     */
-    public String getLastName() {
-        return lastName;
-    }
-
-    /**
-     * @param lastName
-     */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    /**
-     * @return String
-     */
-    public String getBirthDate() {
-        return birthDate;
-    }
-
-    /**
-     * @param birthDate
-     */
-    public void setBirthDate(String birthDate) {
-        this.birthDate = birthDate;
-    }
-
 }

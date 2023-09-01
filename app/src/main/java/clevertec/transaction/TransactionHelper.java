@@ -6,11 +6,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import clevertec.transaction.check.TransactionDescription;
 import clevertec.account.Account;
 import clevertec.transaction.check.TransactionCheck;
+import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionPrinter;
-import clevertec.transaction.check.TransactionPrinterFactory;
 import clevertec.util.DateUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

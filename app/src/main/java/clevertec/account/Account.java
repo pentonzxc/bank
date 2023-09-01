@@ -3,39 +3,44 @@ package clevertec.account;
 import static clevertec.util.MoneyUtil.roundMoney;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import clevertec.bank.Bank;
-import clevertec.transaction.check.TransactionCheck;
 import clevertec.user.User;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 /**
  * Class that represents account in bank.
  */
+
+@Setter
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 public class Account {
 
-    private Integer id;
+    Integer id;
 
-    private double balance = 0d;
+    double balance;
 
-    private Bank bank;
+    Bank bank;
 
-    private User user;
+    User user;
 
-    private String currency;
+    String currency;
 
-    private LocalDateTime openingDate;
+    LocalDateTime openingDate;
 
-    private String accountNumber;
+    String accountNumber;
 
+    @Setter(AccessLevel.NONE)
     @JsonIgnore
-    private final Object lock = new Object();
+    transient private final Object lock = new Object();
 
     /**
      * Add money to balance.
@@ -89,80 +94,10 @@ public class Account {
     }
 
     /**
-     * @return Integer
-     */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     * @param id
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    /**
-     * @return double
-     */
-    public double getBalance() {
-        return balance;
-    }
-
-    /**
      * @param money
      */
     public void setBalance(double money) {
         this.balance = roundMoney(money);
-    }
-
-    /**
-     * @return Bank
-     */
-    public Bank getBank() {
-        return bank;
-    }
-
-    /**
-     * @param bank
-     */
-    public void setBank(Bank bank) {
-        this.bank = bank;
-    }
-
-    /**
-     * @return User
-     */
-    public User getUser() {
-        return user;
-    }
-
-    /**
-     * @param user
-     */
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    /**
-     * @return Object
-     */
-    public Object getLock() {
-        return lock;
-    }
-
-    /**
-     * @return String
-     */
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    /**
-     * @param accountNumber
-     */
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
     }
 
     /**
@@ -184,21 +119,4 @@ public class Account {
 
         return copy;
     }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    public LocalDateTime getOpeningDate() {
-        return openingDate;
-    }
-
-    public void setOpeningDate(LocalDateTime openingDate) {
-        this.openingDate = openingDate;
-    }
-
 }

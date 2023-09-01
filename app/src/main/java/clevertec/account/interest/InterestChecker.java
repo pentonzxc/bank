@@ -1,7 +1,8 @@
 package clevertec.account.interest;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -10,14 +11,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import clevertec.account.Account;
-import clevertec.bank.Bank;
 import clevertec.config.Config;
 import clevertec.util.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 /**
  * Сlass that checks whether it is necessary to charge interest at the end of
