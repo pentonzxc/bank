@@ -13,6 +13,8 @@ import clevertec.account.Account;
 import clevertec.bank.Bank;
 import clevertec.config.Config;
 import clevertec.util.DateUtil;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -39,7 +41,9 @@ public class InterestChecker {
 
     private ScheduledFuture<Void> interestTask;
 
-    private Supplier<List<Account>> accountStorage;
+    @Setter
+    @Getter
+    private Supplier<List<Account>> accounts;
 
     protected InterestChecker(int threadsCount, boolean daemon) {
         if (daemon) {
@@ -61,7 +65,7 @@ public class InterestChecker {
      * @return State of running task.
      */
     @SuppressWarnings("unchecked")
-    public ScheduledFuture<Void> run() {
+    public ScheduledFuture<Void> run(Supplier<List<Account>> accounts) {
         if ((interestTask != null && interestTask.isCancelled()) || interestTask == null) {
             interestTask = (ScheduledFuture<Void>) threadPool.scheduleWithFixedDelay(
                     this::checkInterest,
@@ -70,6 +74,21 @@ public class InterestChecker {
                     TimeUnit.MILLISECONDS);
         }
         return interestTask;
+    }
+
+    /**
+     * This method run task checker without providing accounts.
+     * <p>
+     * If accounts don't exist throw {@link AssertionError}.
+     * 
+     * @see InterestChecker#stop
+     * @see AssertionError
+     * @see java.util.concurrent.ScheduledFuture
+     * @return State of running task.
+     */
+    public ScheduledFuture<Void> run() {
+        assert accounts != null;
+        return run();
     }
 
     /**
@@ -101,19 +120,17 @@ public class InterestChecker {
         return new InterestChecker(threadsCount, daemon);
     }
 
-    // TODO: can make it a bit faster
-    // instead of simple synhronized with for blocking if current lock was taken
-    // (just replace Object lock on Lock lock)
+    // TODO: to make faster
+    // instead of using for comprehensions with synchronized use Lock with timeout
     // instead of List we have Queue of accounts
-    // pop from Queue, can use Lock with timeout 1 second, if TimeoutException then
-    // enqueue back in Queue
-    // else enqueue the next elem from Queue
+    // pop from Queue, take lock on account setting timeout 1 second
+    // if timeout is happened => put account back in queue
     private void checkInterest() {
         System.out.println(working && isTodayLastDayOfMonth());
         try {
             if (working && isTodayLastDayOfMonth()) {
-                List<Account> accounts = accountStorage.get();
-                for (Account account : accounts) {
+                List<Account> accounts_ = accounts.get();
+                for (Account account : accounts_) {
                     synchronized (account.getLock()) {
                         account.addPercent(INTEREST_PERCENT);
                     }
@@ -137,14 +154,6 @@ public class InterestChecker {
      */
     protected boolean isTodayLastDayOfMonth() {
         return DateUtil.isTodayLastDayOfMonth();
-    }
-
-    public Supplier<List<Account>> getAccountStorage() {
-        return accountStorage;
-    }
-
-    public void setAccountStorage(Supplier<List<Account>> accountStorage) {
-        this.accountStorage = accountStorage;
     }
 
     /**

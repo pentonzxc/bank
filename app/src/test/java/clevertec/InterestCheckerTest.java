@@ -93,7 +93,7 @@ public class InterestCheckerTest {
     void whenNotLastDayInMonth_expectSameMoneyOnAccounts() throws InterruptedException {
         List<Account> accounts = new AccountService().readAll();
         double sumBefore = balanceSumAllAccounts(accounts);
-        checker.setAccountStorage(() -> accounts);
+        checker.setAccounts(() -> accounts);
 
         checker.run();
 
@@ -112,7 +112,7 @@ public class InterestCheckerTest {
         Double expectedSum = MoneyUtil
                 .roundMoney(sumBefore * (1 + Config.getProperty("INTEREST_PERCENT", Double::parseDouble) / 100));
 
-        checker.setAccountStorage(() -> accounts);
+        checker.setAccounts(() -> accounts);
         checker.setMockDate(true);
         checker.run();
 
@@ -128,7 +128,7 @@ public class InterestCheckerTest {
     void whenLastDayMonth_expectOnlyOneRaiseOfMoneyOnAccounts() throws InterruptedException {
         List<Account> accounts = new AccountService().readAll();
 
-        checker.setAccountStorage(() -> accounts);
+        checker.setAccounts(() -> accounts);
         checker.setMockDate(true);
         checker.run();
 
