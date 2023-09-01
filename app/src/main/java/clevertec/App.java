@@ -25,7 +25,7 @@ import clevertec.bank.Bank;
 import clevertec.service.AccountService;
 import clevertec.service.TransactionService;
 import clevertec.service.UserService;
-import clevertec.transaction.ActionType;
+import clevertec.transaction.TransactionActionType;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.TransactionAction;
 import clevertec.transaction.TransactionException;
@@ -134,9 +134,9 @@ public class App {
 
         try {
             TransactionComputation runner1 = transaction.begin();
-            runner1.transfer(new TransactionAction(ActionType.SUB, 5));
+            runner1.transfer(new TransactionAction(TransactionActionType.SUB, 5));
             TransactionComputation runner2 = transaction2.begin();
-            runner2.transfer(new TransactionAction(ActionType.ADD, 15));
+            runner2.transfer(new TransactionAction(TransactionActionType.ADD, 15));
         } catch (TransactionException e) {
             throw new RuntimeException(e);
         }

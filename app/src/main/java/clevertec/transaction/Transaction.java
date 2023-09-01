@@ -9,25 +9,36 @@ import java.util.function.Function;
 
 import clevertec.account.Account;
 import clevertec.transaction.check.TransactionCheck;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
 
 /**
  * 
  * Transaction is a class that represent change on account or accounts.
  *
  */
-// @Data
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Transaction {
-    private UUID id;
+    @Getter(AccessLevel.NONE)
+    UUID id;
 
-    private Account main;
+    Account main;
 
-    private Account aux;
+    Account aux;
 
-    private LocalDateTime finishedAt;
+    LocalDateTime finishedAt;
 
-    volatile private boolean[] completed;
+    @Getter(AccessLevel.NONE)
+    volatile boolean[] completed;
 
+    /**
+     * Transaction for one account.
+     * 
+     * @param origin
+     */
     public Transaction(@NonNull Account origin) {
         this(origin, origin);
     }
@@ -44,7 +55,7 @@ public class Transaction {
         this.completed = new boolean[1];
     }
 
-    private Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> onFailureRollback = f -> {
+    Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> onFailureRollback = f -> {
         Account copyMain = main.softCopy();
         Account copyAux = main.getId() != aux.getId() ? aux.softCopy() : copyMain;
         TransactionCheck check = null;
@@ -57,7 +68,7 @@ public class Transaction {
         return check;
     };
 
-    private Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction = f -> {
+    Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction = f -> {
         TransactionCheck check = null;
 
         Object lock1 = aux.getId() < main.getId() ? main.getLock() : aux.getLock();
@@ -95,7 +106,7 @@ public class Transaction {
      * <b>add => main <- aux, sub => main -> aux </b>
      * <p>
      * 3) If money doesn't enough to perform any operation on any account,
-     * <b>Transaction will be rollbacked</b> and throwed
+     * <b>Transaction will be rollbacked</b> and thrown
      * {@link TransactionException}
      * 
      * 
@@ -116,7 +127,7 @@ public class Transaction {
 
     /**
      * 
-     * More appropriate api to create transaction.
+     * More appropriate api to create transaction over two accounts.
      * 
      * @see Transaction#Transaction(Account, Account)
      * @param main - main account

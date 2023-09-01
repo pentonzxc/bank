@@ -1,5 +1,7 @@
 package clevertec.transaction;
 
+import static clevertec.util.DateUtil.dateTimeToStringWithoutSeconds;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,7 +12,6 @@ import clevertec.account.Account;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionPrinter;
-import clevertec.util.DateUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,17 +48,19 @@ public class TransactionHelper {
 
         static void resolveAndSetActionDescriptionInPlace(
                 @NonNull TransactionCheck check,
-                @NonNull ActionType type,
-                @NonNull ActionDirection direction,
+                @NonNull TransactionActionType type,
+                @NonNull TransactionActionDirection direction,
                 @NonNull Account main,
-                Account aux) {
-            if ((direction == ActionDirection.ACCOUNT_TRANSFER || main.getId() == aux.getId())
-                    && type == ActionType.ADD) {
+                @NonNull Account aux) {
+            if ((direction == TransactionActionDirection.ACCOUNT_TRANSFER ||
+                    main.getId() == aux.getId()) &&
+                    type == TransactionActionType.ADD) {
                 check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
-            } else if ((direction == ActionDirection.ACCOUNT_TRANSFER || main.getId() == aux.getId())
-                    && type == ActionType.SUB) {
+            } else if ((direction == TransactionActionDirection.ACCOUNT_TRANSFER ||
+                    main.getId() == aux.getId()) &&
+                    type == TransactionActionType.SUB) {
                 check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
-            } else if (direction == ActionDirection.ACCOUNT_ACCOUNT_TRANSFER) {
+            } else if (direction == TransactionActionDirection.ACCOUNT_ACCOUNT_TRANSFER) {
                 check.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
             } else {
                 log.debug("TransactionHelper resolveMoneyDirectionInPlace receive illegal ActionDirection :: "
@@ -86,17 +89,19 @@ public class TransactionHelper {
         static void resolveAndSetOriginAndTargetInPlace(
                 @NonNull TransactionCheck check,
                 @NonNull TransactionDescription description,
-                @NonNull ActionType type,
+                @NonNull TransactionActionType type,
                 @NonNull Account main,
-                Account aux) {
-            if (description == TransactionDescription.ACCOUNT_TRANSFER_ADD
-                    || description == TransactionDescription.ACCOUNT_TRANSFER_SUB) {
+                @NonNull Account aux) {
+            if (description == TransactionDescription.ACCOUNT_TRANSFER_ADD ||
+                    description == TransactionDescription.ACCOUNT_TRANSFER_SUB) {
                 check.setOrigin(main);
                 check.setTarget(main);
-            } else if (description == TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.ADD) {
+            } else if (description == TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER &&
+                    type == TransactionActionType.ADD) {
                 check.setOrigin(aux);
                 check.setTarget(main);
-            } else if (description == TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER && type == ActionType.SUB) {
+            } else if (description == TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER &&
+                    type == TransactionActionType.SUB) {
                 check.setOrigin(main);
                 check.setTarget(aux);
             }
@@ -114,7 +119,7 @@ public class TransactionHelper {
          */
         public static File saveAsFile(@NonNull TransactionCheck check,
                 @NonNull TransactionPrinter<String> printer) {
-            String fileName = check.getId() + "|" + DateUtil.dateTimeToStringWithoutSeconds(check.getCreatedAt());
+            String fileName = check.getId() + "|" + dateTimeToStringWithoutSeconds(check.getCreatedAt());
             try {
                 return Files.writeString(
                         Path.of(CHECK_DIR_PATH, fileName),

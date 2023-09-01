@@ -10,59 +10,52 @@ import java.util.function.Supplier;
 
 import clevertec.account.Account;
 import clevertec.transaction.check.TransactionCheck;
-import clevertec.transaction.check.TransactionPrinter;
 import clevertec.transaction.check.TransactionPrinterFactory;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 /**
  * Class that is responsible for transaction computation process.
  */
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TransactionComputation {
 
-    private final Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction;
+    final Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction;
+    final Supplier<UUID> transactionId;
+    final Supplier<LocalDateTime> transactionFinishedAtDateTime;
+    final Consumer<Boolean> completeTransaction;
+    @Getter
+    volatile boolean completed;
 
-    private final Supplier<UUID> transactionId;
-    private final Supplier<LocalDateTime> transactionFinishedAtDateTime;
-    private final Consumer<Boolean> completeTransaction;
-
-    volatile private boolean completed;
-
-    TransactionComputation(
-            Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction,
-            Supplier<UUID> transactionId,
-            Supplier<LocalDateTime> transactionFinishedAtDateTime,
-            Consumer<Boolean> completeTransaction) {
-        this.transaction = transaction;
-        this.transactionId = transactionId;
-        this.transactionFinishedAtDateTime = transactionFinishedAtDateTime;
-        this.completeTransaction = completeTransaction;
-        completed = false;
-    }
-
-    private Function<TransactionAction, BiFunction<Account, Account, TransactionCheck>> doTransfer = (
+    final Function<TransactionAction, BiFunction<Account, Account, TransactionCheck>> doTransfer = (
             TransactionAction action) -> (Account main, Account aux) -> {
                 TransactionCheck check = new TransactionCheck();
-                ActionType actionType = action.getType();
-                ActionDirection actionDirection = ActionDirection.NONE;
-                double change = action.getTransferAmount();
+                TransactionActionDirection actionDirection = TransactionActionDirection.NONE;
                 double success = 0;
+                TransactionActionType actionType = action.getAction();
+                double change = action.getTransferAmount();
 
                 if (main.getId() == aux.getId()) {
-                    if (actionType == ActionType.ADD) {
+                    if (actionType == TransactionActionType.ADD) {
                         main.addMoney(change);
                     } else {
                         success = main.subMoney(change);
                     }
-
-                    actionDirection = ActionDirection.ACCOUNT_TRANSFER;
+                    actionDirection = TransactionActionDirection.ACCOUNT_TRANSFER;
                 } else {
-                    // TODO: some misunderstanding
-                    if (actionType == ActionType.ADD) {
+                    if (actionType == TransactionActionType.ADD) {
                         success = aux.transfer(main, change);
                     } else {
                         success = main.transfer(aux, change);
                     }
+                    actionDirection = TransactionActionDirection.ACCOUNT_ACCOUNT_TRANSFER;
+                }
 
-                    actionDirection = ActionDirection.ACCOUNT_ACCOUNT_TRANSFER;
+                if (success == -1) {
+                    throw new TransactionRuntimeException();
                 }
 
                 check.setCreatedAt(LocalDateTime.now(ZoneId.systemDefault()));
@@ -80,16 +73,17 @@ public class TransactionComputation {
                         main,
                         aux);
 
-                if (success == -1) {
-                    throw new TransactionRuntimeException();
-                }
-
                 return check;
             };
 
     /**
-     * Compute transaction
+     * Compute transaction and return transaction check of this transaction.
+     * <p>
+     * If saveCheck, save check as file in check folder.
+     * <p>
+     * If run twice, throws exception.
      * 
+     * @see TransactionHelper.Check#CHECK_DIR_PATH
      * @param action - action to transfer
      * @return TransactionCheck
      * @throws TransactionException
@@ -114,12 +108,16 @@ public class TransactionComputation {
         }
     }
 
+    /**
+     * Compute transaction and return transaction check of this transaction.
+     * 
+     * @see TransactionComputation#transfer(TransactionAction, boolean)
+     * @see TransactionHelper.Check#CHECK_DIR_PATH
+     * @param action - action to transfer
+     * @return TransactionCheck
+     * @throws TransactionException
+     */
     public TransactionCheck transfer(TransactionAction action) throws TransactionException {
         return transfer(action, false);
     }
-
-    public boolean isCompleted() {
-        return completed;
-    }
-
 }

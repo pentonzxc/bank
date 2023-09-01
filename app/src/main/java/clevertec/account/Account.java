@@ -68,7 +68,7 @@ public class Account {
      * Subtract money from balance.
      * 
      * @param money - to subtract
-     * @return Double
+     * @return balance after subtract, <b>if money doesn't enough to subtract return -1</b>
      */
     public Double subMoney(double money) {
         if (this.balance < money) {
@@ -83,7 +83,7 @@ public class Account {
      * 
      * @param target - where to transfer money
      * @param change - to transfer
-     * @return double
+     * @return balance after transfer, <b>if money doesn't enough to transfer return -1</b>
      */
     public double transfer(Account target, double change) {
         if (subMoney(change) == -1) {

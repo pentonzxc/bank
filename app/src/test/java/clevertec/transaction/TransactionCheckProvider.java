@@ -51,7 +51,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
 
         Transaction transaction = new Transaction(acc1, acc2);
-        TransactionAction transactionAction = TransactionAction.from(ActionType.ADD, change);
+        TransactionAction transactionAction = TransactionAction.from(TransactionActionType.ADD, change);
 
         return Arguments.of(check, transaction, transactionAction);
     }
@@ -78,7 +78,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
 
         Transaction transaction = new Transaction(acc1, acc2);
-        TransactionAction transactionAction = TransactionAction.from(ActionType.SUB, change);
+        TransactionAction transactionAction = TransactionAction.from(TransactionActionType.SUB, change);
 
         return Arguments.of(check, transaction, transactionAction);
     }
@@ -100,7 +100,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
 
         Transaction transaction = new Transaction(acc1, acc1);
-        TransactionAction transactionAction = TransactionAction.from(ActionType.ADD, change);
+        TransactionAction transactionAction = TransactionAction.from(TransactionActionType.ADD, change);
 
         return Arguments.of(check, transaction, transactionAction);
     }
@@ -122,7 +122,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
 
         Transaction transaction = new Transaction(acc1, acc1);
-        TransactionAction transactionAction = TransactionAction.from(ActionType.SUB, change);
+        TransactionAction transactionAction = TransactionAction.from(TransactionActionType.SUB, change);
 
         return Arguments.of(check, transaction, transactionAction);
     }
@@ -144,7 +144,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
 
         Transaction transaction = new Transaction(acc1);
-        TransactionAction transactionAction = TransactionAction.from(ActionType.ADD, change);
+        TransactionAction transactionAction = TransactionAction.from(TransactionActionType.ADD, change);
 
         return Arguments.of(check, transaction, transactionAction);
     }
@@ -166,7 +166,7 @@ public class TransactionCheckProvider implements ArgumentsProvider {
         check.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
 
         Transaction transaction = new Transaction(acc1);
-        TransactionAction transactionAction = TransactionAction.from(ActionType.SUB, change);
+        TransactionAction transactionAction = TransactionAction.from(TransactionActionType.SUB, change);
 
         return Arguments.of(check, transaction, transactionAction);
     }

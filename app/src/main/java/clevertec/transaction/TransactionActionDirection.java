@@ -2,9 +2,10 @@ package clevertec.transaction;
 
 /**
  * Represent transaction operation direction.
+ * 
  * @see Transaction
  */
-public enum ActionDirection {
+public enum TransactionActionDirection {
     /**
      * Action to account.
      */

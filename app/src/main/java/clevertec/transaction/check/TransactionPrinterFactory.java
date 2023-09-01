@@ -2,11 +2,7 @@ package clevertec.transaction.check;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
 import java.util.function.Function;
-
-import clevertec.account.Account;
-import clevertec.bank.Bank;
 
 public class TransactionPrinterFactory {
     private TransactionPrinterFactory() {

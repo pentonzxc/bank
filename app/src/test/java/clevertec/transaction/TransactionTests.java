@@ -44,7 +44,7 @@ public class TransactionTests {
             double unexpected2 = acc2.getBalance();
 
             Transaction t = new Transaction(acc1, acc2);
-            t.begin().transfer(TransactionAction.from(ActionType.SUB, 100));
+            t.begin().transfer(TransactionAction.from(TransactionActionType.SUB, 100));
 
             assertAll(
                     () -> assertNotEquals(unexpected1, acc1.getBalance()),
@@ -70,8 +70,8 @@ public class TransactionTests {
             Transaction t2 = new Transaction(acc3);
             TransactionComputation runner1 = t1.begin();
             TransactionComputation runner2 = t2.begin();
-            runner1.transfer(TransactionAction.from(ActionType.SUB, 100));
-            runner2.transfer(TransactionAction.from(ActionType.SUB, 10));
+            runner1.transfer(TransactionAction.from(TransactionActionType.SUB, 100));
+            runner2.transfer(TransactionAction.from(TransactionActionType.SUB, 10));
 
             assertAll(
                     () -> assertTrue(before1 > acc1.getBalance()),
@@ -101,8 +101,8 @@ public class TransactionTests {
             Transaction t2 = new Transaction(acc3);
             TransactionComputation runner1 = t1.begin();
             TransactionComputation runner2 = t2.begin();
-            runner1.transfer(TransactionAction.from(ActionType.ADD, 10));
-            runner2.transfer(TransactionAction.from(ActionType.ADD, 10));
+            runner1.transfer(TransactionAction.from(TransactionActionType.ADD, 10));
+            runner2.transfer(TransactionAction.from(TransactionActionType.ADD, 10));
 
             assertAll(
                     () -> assertTrue(before1 < acc1.getBalance()),
@@ -124,7 +124,7 @@ public class TransactionTests {
 
             Transaction t1 = new Transaction(acc1, acc2);
             TransactionComputation runner1 = t1.begin();
-            Executable f = () -> runner1.transfer(TransactionAction.from(ActionType.ADD, 10));
+            Executable f = () -> runner1.transfer(TransactionAction.from(TransactionActionType.ADD, 10));
             assertAll(
                     () -> assertThrowsExactly(TransactionException.class, f),
                     () -> assertEquals(expected1, acc1.getBalance()),
@@ -143,7 +143,7 @@ public class TransactionTests {
 
             Transaction t = new Transaction(acc1, acc2);
             TransactionComputation runner = t.begin();
-            Executable f = () -> runner.transfer(TransactionAction.from(ActionType.SUB, 10));
+            Executable f = () -> runner.transfer(TransactionAction.from(TransactionActionType.SUB, 10));
 
             assertAll(
                     () -> assertThrowsExactly(TransactionException.class, f),
@@ -158,7 +158,7 @@ public class TransactionTests {
 
             Transaction t = new Transaction(acc1);
             TransactionComputation runner = t.begin();
-            Executable f = () -> runner.transfer(TransactionAction.from(ActionType.SUB, 20));
+            Executable f = () -> runner.transfer(TransactionAction.from(TransactionActionType.SUB, 20));
             assertThrowsExactly(TransactionException.class, f);
         }
 
@@ -172,14 +172,14 @@ public class TransactionTests {
 
             Transaction t1 = new Transaction(acc1, acc1);
             TransactionComputation runner1 = t1.begin();
-            runner1.transfer(TransactionAction.from(ActionType.SUB, 9));
+            runner1.transfer(TransactionAction.from(TransactionActionType.SUB, 9));
 
             assertEquals(expected1, acc1.getBalance());
 
             Transaction t2 = new Transaction(acc1, acc1);
             TransactionComputation runner2 = t2.begin();
 
-            runner2.transfer(TransactionAction.from(ActionType.ADD, 9));
+            runner2.transfer(TransactionAction.from(TransactionActionType.ADD, 9));
 
             assertEquals(expected2, acc1.getBalance());
 
@@ -195,7 +195,7 @@ public class TransactionTests {
 
             Transaction t = new Transaction(acc1, acc1);
             TransactionComputation runner = t.begin();
-            Executable f = () -> runner.transfer(TransactionAction.from(ActionType.SUB, 11));
+            Executable f = () -> runner.transfer(TransactionAction.from(TransactionActionType.SUB, 11));
 
             assertAll(
                     () -> assertThrowsExactly(TransactionException.class, f),

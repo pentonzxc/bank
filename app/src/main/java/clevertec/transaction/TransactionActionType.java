@@ -6,7 +6,7 @@ package clevertec.transaction;
  * @see Transaction
  * 
  */
-public enum ActionType {
+public enum TransactionActionType {
     /**
      * Add money
      */

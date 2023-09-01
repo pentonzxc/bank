@@ -3,11 +3,15 @@ package clevertec.transaction.check;
 import java.util.Arrays;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
+
 /**
  * Describe the transaction <b>action that occurred</b>.
  * 
  * @see clevertec.transaction.Transaction
  */
+
+@RequiredArgsConstructor
 public enum TransactionDescription {
     /**
      * Account replenishment.
@@ -23,10 +27,6 @@ public enum TransactionDescription {
     ACCOUNT_ACCOUNT_TRANSFER("Перевод на счёт");
 
     private final String description;
-
-    private TransactionDescription(String description) {
-        this.description = description;
-    }
 
     static public Optional<TransactionDescription> fromDescription(String description) {
         return Arrays.stream(TransactionDescription.values())
