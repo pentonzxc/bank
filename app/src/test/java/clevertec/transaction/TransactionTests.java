@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import clevertec.Account;
+import clevertec.account.Account;
 import clevertec.service.AccountService;
 import clevertec.service.UserService;
 import clevertec.transaction.check.TransactionDescription;

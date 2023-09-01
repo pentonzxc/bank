@@ -1,4 +1,4 @@
-package clevertec.account_interest.scheduler;
+package clevertec.account.interest;
 
 /**
  * Thread safe factory for {@link InterestChecker}.

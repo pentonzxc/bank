@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import clevertec.Account;
+import clevertec.account.Account;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionPrinter;
 import clevertec.transaction.check.TransactionPrinterFactory;

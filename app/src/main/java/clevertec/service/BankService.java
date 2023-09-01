@@ -8,8 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import clevertec.Bank;
-import clevertec.DatabaseConfig;
+import clevertec.bank.Bank;
+import clevertec.config.DatabaseConfig;
 
 public class BankService {
     public int create(Bank bank) {

@@ -8,12 +8,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import clevertec.Account;
-import clevertec.Bank;
-import clevertec.User;
+import clevertec.account.Account;
+import clevertec.bank.Bank;
 import clevertec.service.AccountService;
 import clevertec.service.BankService;
 import clevertec.service.UserService;
+import clevertec.user.User;
 import clevertec.util.ObjectMapperUtil;
 import clevertec.util.RequestUtil;
 import jakarta.servlet.annotation.WebServlet;

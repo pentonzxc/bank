@@ -1,4 +1,4 @@
-package clevertec;
+package clevertec.bank;
 
 import java.util.HashSet;
 import java.util.Set;

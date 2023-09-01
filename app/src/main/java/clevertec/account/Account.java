@@ -1,4 +1,4 @@
-package clevertec;
+package clevertec.account;
 
 import static clevertec.util.MoneyUtil.roundMoney;
 
@@ -9,7 +9,9 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import clevertec.bank.Bank;
 import clevertec.transaction.check.TransactionCheck;
+import clevertec.user.User;
 import lombok.NoArgsConstructor;
 
 /**

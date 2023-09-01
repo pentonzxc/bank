@@ -2,7 +2,7 @@ package clevertec;
 
 import java.util.concurrent.Future;
 
-import clevertec.account_interest.scheduler.InterestChecker;
+import clevertec.account.interest.InterestChecker;
 import clevertec.config.Config;
 
 public class TestInstanceInterestChecker extends InterestChecker {

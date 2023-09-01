@@ -7,7 +7,7 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import clevertec.Account;
+import clevertec.account.Account;
 import clevertec.transaction.check.TransactionCheck;
 import lombok.NonNull;
 

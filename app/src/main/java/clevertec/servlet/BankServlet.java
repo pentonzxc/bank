@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import clevertec.Bank;
-import clevertec.User;
+import clevertec.bank.Bank;
 import clevertec.service.BankService;
 import clevertec.service.UserService;
+import clevertec.user.User;
 import clevertec.util.ObjectMapperUtil;
 import clevertec.util.RequestUtil;
 import jakarta.servlet.annotation.WebServlet;

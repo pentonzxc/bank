@@ -1,4 +1,4 @@
-package clevertec;
+package clevertec.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

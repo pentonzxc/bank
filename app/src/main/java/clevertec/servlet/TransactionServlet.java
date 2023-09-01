@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import clevertec.Account;
+import clevertec.account.Account;
 import clevertec.service.AccountService;
 import clevertec.service.TransactionService;
 import clevertec.transaction.check.TransactionCheck;

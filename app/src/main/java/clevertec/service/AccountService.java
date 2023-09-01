@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import clevertec.Account;
-import clevertec.Bank;
-import clevertec.DatabaseConfig;
-import clevertec.User;
+import clevertec.account.Account;
+import clevertec.bank.Bank;
+import clevertec.config.DatabaseConfig;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.check.TransactionCheck;
+import clevertec.user.User;
 
 public class AccountService {
 

@@ -5,8 +5,8 @@ import java.time.LocalTime;
 import java.util.Optional;
 import java.util.function.Function;
 
-import clevertec.Account;
-import clevertec.Bank;
+import clevertec.account.Account;
+import clevertec.bank.Bank;
 
 public class TransactionPrinterFactory {
     private TransactionPrinterFactory() {

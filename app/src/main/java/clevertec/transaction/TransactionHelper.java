@@ -6,8 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import clevertec.Account;
 import clevertec.transaction.check.TransactionDescription;
+import clevertec.account.Account;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionPrinter;
 import clevertec.transaction.check.TransactionPrinterFactory;

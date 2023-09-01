@@ -1,4 +1,4 @@
-package clevertec.account_interest.scheduler;
+package clevertec.account.interest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,8 +9,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import clevertec.Account;
-import clevertec.Bank;
+import clevertec.account.Account;
+import clevertec.bank.Bank;
 import clevertec.config.Config;
 import clevertec.util.DateUtil;
 

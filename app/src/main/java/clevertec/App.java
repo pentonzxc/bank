@@ -18,8 +18,10 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-import clevertec.account_interest.scheduler.InterestChecker;
-import clevertec.account_interest.scheduler.InterestCheckerFactory;
+import clevertec.account.Account;
+import clevertec.account.interest.InterestChecker;
+import clevertec.account.interest.InterestCheckerFactory;
+import clevertec.bank.Bank;
 import clevertec.service.AccountService;
 import clevertec.service.TransactionService;
 import clevertec.service.UserService;
@@ -32,6 +34,7 @@ import clevertec.transaction.TransactionComputation;
 import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionPrinterFactory;
+import clevertec.user.User;
 import clevertec.util.ObjectMapperUtil;
 
 public class App {

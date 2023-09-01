@@ -21,11 +21,11 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-import clevertec.Account;
-import clevertec.Bank;
-import clevertec.DatabaseConfig;
-import clevertec.User;
+import clevertec.account.Account;
+import clevertec.bank.Bank;
+import clevertec.config.DatabaseConfig;
 import clevertec.transaction.check.TransactionDescription;
+import clevertec.user.User;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.util.DateUtil;
 import clevertec.util.MoneyUtil;

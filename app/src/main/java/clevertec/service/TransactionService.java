@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import clevertec.Account;
-import clevertec.DatabaseConfig;
+import clevertec.account.Account;
+import clevertec.config.DatabaseConfig;
 import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionCheck;
 

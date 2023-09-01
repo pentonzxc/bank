@@ -8,8 +8,8 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import clevertec.Account;
-import clevertec.Bank;
+import clevertec.account.Account;
+import clevertec.bank.Bank;
 
 public class StringTransactionPrinterTest {
     private TransactionPrinter<String> printer = TransactionPrinterFactory.stringPrinter();
