@@ -13,7 +13,7 @@ import clevertec.user.User;
 public class UserService {
 
     public int create(User user) {
-        String query = "INSERT INTO user_(first_name , last_name) VALUES (? , ?)";
+        String query = "INSERT INTO user_(first_name , last_name , birth_date) VALUES (? , ? , ?)";
 
         int id = 0;
 

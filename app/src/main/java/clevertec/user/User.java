@@ -1,5 +1,7 @@
 package clevertec.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,10 +19,13 @@ import lombok.experimental.FieldDefaults;
 public class User {
     Integer id;
 
+    @JsonProperty("first_name")
     String firstName;
 
+    @JsonProperty("last_name")
     String lastName;
 
+    @JsonProperty("birth_date")
     String birthDate;
 
     /**

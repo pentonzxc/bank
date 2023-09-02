@@ -91,7 +91,6 @@ public class TransactionTests {
             acc2.setBalance(100);
             acc3.setBalance(100);
             double before1 = acc1.getBalance();
-            double before2 = acc2.getBalance();
             double before3 = acc3.getBalance();
             double expected1 = 110;
             double expected2 = 90;

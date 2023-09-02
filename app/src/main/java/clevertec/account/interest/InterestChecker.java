@@ -85,7 +85,7 @@ public class InterestChecker {
      */
     public ScheduledFuture<Void> run() {
         assert accounts != null;
-        return run();
+        return run(accounts);
     }
 
     /**

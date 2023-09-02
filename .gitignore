@@ -9,8 +9,9 @@ app/bin
 # some txt for local env :)
 ref.txt
 tips.txt
-volume/postgres/*
-*.pdf
+
+bank-statement/
+check/
 # python person txt generator
 # random_person_generator.py
 # persons.txt

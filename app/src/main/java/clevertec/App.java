@@ -25,7 +25,6 @@ import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionPrinterFactory;
 import clevertec.user.User;
-import clevertec.util.ObjectMapperUtil;
 
 public class App {
 
@@ -36,7 +35,7 @@ public class App {
      * @throws IOException
      */
     public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
-        System.out.println("Hello world!");
+        
     }
 
     // Account transfer example

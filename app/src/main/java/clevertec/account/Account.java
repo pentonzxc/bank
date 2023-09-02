@@ -5,6 +5,8 @@ import static clevertec.util.MoneyUtil.roundMoney;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import clevertec.bank.Bank;
 import clevertec.user.User;
@@ -22,6 +24,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Account {
 
     Integer id;
@@ -34,13 +37,15 @@ public class Account {
 
     String currency;
 
+    @JsonProperty("opening_date")
     LocalDateTime openingDate;
 
+    @JsonProperty("account_number")
     String accountNumber;
 
     @Setter(AccessLevel.NONE)
     @JsonIgnore
-    transient private final Object lock = new Object();
+    private final Object lock = new Object();
 
     /**
      * Add money to balance.
@@ -68,7 +73,8 @@ public class Account {
      * Subtract money from balance.
      * 
      * @param money - to subtract
-     * @return balance after subtract, <b>if money doesn't enough to subtract return -1</b>
+     * @return balance after subtract, <b>if money doesn't enough to subtract return
+     *         -1</b>
      */
     public Double subMoney(double money) {
         if (this.balance < money) {
@@ -83,7 +89,8 @@ public class Account {
      * 
      * @param target - where to transfer money
      * @param change - to transfer
-     * @return balance after transfer, <b>if money doesn't enough to transfer return -1</b>
+     * @return balance after transfer, <b>if money doesn't enough to transfer return
+     *         -1</b>
      */
     public double transfer(Account target, double change) {
         if (subMoney(change) == -1) {

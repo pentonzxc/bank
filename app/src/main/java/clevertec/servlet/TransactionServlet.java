@@ -24,10 +24,14 @@ import clevertec.transaction.check.TransactionDescription;
 import clevertec.util.ObjectMapperUtil;
 import clevertec.util.Pair;
 import clevertec.util.RequestUtil;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class TransactionServlet {
+
+@WebServlet(name = "transaction_servlet", value = "/transaction/*")
+public class TransactionServlet extends HttpServlet{
     ObjectMapper objectMapper = ObjectMapperUtil.get();
 
     AccountService accountService = new AccountService(new BankService() , new UserService());
@@ -42,7 +46,11 @@ public class TransactionServlet {
             (req, resp) -> {
                 String body = RequestUtil.getBody(req);
                 TransactionCheck transactionCheck = fromJson(body);
-                transactionService.create(transactionCheck);
+                try {
+                    resp.getWriter().write(transactionService.create(transactionCheck).toString());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             });
     }
 
@@ -117,12 +125,12 @@ public class TransactionServlet {
                     .map(JsonNode::asText)
                     .flatMap(TransactionDescription::fromDescription)
                     .orElse(null);
-            Account origin = Optional.ofNullable(jsonNode.get("account_origin_id"))
+            Account origin = Optional.ofNullable(jsonNode.get("origin_account_id"))
                     .map(JsonNode::asInt)
                     .map(accountService::read)
                     .orElse(null);
 
-            Account target = Optional.ofNullable(jsonNode.get("account_target_id"))
+            Account target = Optional.ofNullable(jsonNode.get("target_account_id"))
                     .map(JsonNode::asInt)
                     .map(accountService::read)
                     .orElse(null);

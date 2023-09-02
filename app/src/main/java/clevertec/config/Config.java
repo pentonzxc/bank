@@ -31,7 +31,7 @@ public class Config {
         try {
             PropertiesFilePath = PathUtil.resolvePath(
                     String.join(File.separator, new String[] {
-                            "src", "main", "resources", "application.properties"
+                            "app", "src", "main", "resources", "application.properties"
                     }));
             nameToProperty = Files
                     .readAllLines(Path.of(

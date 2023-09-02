@@ -40,16 +40,22 @@ public class AccountServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         post(request,
-            response,
-            (req, resp) -> {
-                String body = RequestUtil.getBody(req);
-                Account account = fromJson(body);
-                accountService.create(account);
-            });
+                response,
+                (req, resp) -> {
+                    String body = RequestUtil.getBody(req);
+                    Account account = fromJson(body);
+                    accountService.create(account);
+
+                    try {
+                        resp.getWriter().write(accountService.create(account));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-            get(request,
+        get(request,
                 response,
                 Integer::parseInt,
                 (id, pair_) -> {
@@ -70,29 +76,29 @@ public class AccountServlet extends HttpServlet {
     public void doPut(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
         put(request,
-            response,
-            Integer::parseInt,
-            (id, pair_) -> {
-                Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
-                HttpServletRequest req = pair.first();
+                response,
+                Integer::parseInt,
+                (id, pair_) -> {
+                    Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
+                    HttpServletRequest req = pair.first();
 
-                String body = getBody(req);
-                Account account = fromJson(body);
+                    String body = getBody(req);
+                    Account account = fromJson(body);
 
-                account.setId(id);
-                accountService.update(account);
-            });
+                    account.setId(id);
+                    accountService.update(account);
+                });
     }
 
     public void doDelete(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
         delete(
-            request,
-            response,
-            Integer::parseInt,
-            (id, pair_) -> {
-                accountService.delete(id);
-            });
+                request,
+                response,
+                Integer::parseInt,
+                (id, pair_) -> {
+                    accountService.delete(id);
+                });
     }
 
     private Account fromJson(String json) {

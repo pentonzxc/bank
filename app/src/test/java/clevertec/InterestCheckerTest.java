@@ -27,6 +27,16 @@ import clevertec.util.MoneyUtil;
 public class InterestCheckerTest {
     private TestInstanceInterestChecker checker = new TestInstanceInterestChecker(true, false);
 
+    {
+        Account acc1 = new Account();
+        Account acc2 = new Account();
+
+        acc1.setBalance(100);
+        acc2.setBalance(100.20);
+
+        checker.setAccounts(() -> List.of(acc1, acc2));
+    }
+
     @AfterEach
     void afterEach() {
         checker.setMockDate(false);
@@ -39,7 +49,7 @@ public class InterestCheckerTest {
     }
 
     @Test
-    public void whenInterestRun_expectTaskIsNeverDone() {
+    void whenInterestRun_expectTaskIsNeverDone() {
         ScheduledFuture<Void> future = checker.run();
         try {
             future.get(1, TimeUnit.MINUTES);
@@ -52,7 +62,7 @@ public class InterestCheckerTest {
      * @throws InterruptedException
      */
     @Test
-    public void whenInterestRun_thenRunAgain_expectIgnoreNewRunCalls() throws InterruptedException {
+    void whenInterestRun_thenRunAgain_expectIgnoreNewRunCalls() throws InterruptedException {
         ScheduledFuture<Void> task1 = checker.run();
         ScheduledFuture<Void> task2 = checker.run();
         ScheduledFuture<Void> task3 = checker.run();
@@ -62,7 +72,7 @@ public class InterestCheckerTest {
     }
 
     @Test
-    public void whenRun_thenImmediatelyStop_expectTaskStopped() {
+    void whenRun_thenImmediatelyStop_expectTaskStopped() {
         Exception ex = null;
 
         checker.run();
@@ -77,7 +87,7 @@ public class InterestCheckerTest {
     }
 
     @Test
-    public void whenNotRun_thenCallStop_expectIgnoreStopCall() {
+    void whenNotRun_thenCallStop_expectIgnoreStopCall() {
         Exception ex = null;
 
         try {

@@ -27,76 +27,74 @@ public class UserServlet extends HttpServlet {
     UserService userService = new UserService();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-       
+
         post(
-            request,
-            response,
-            (req, resp) -> {
-                String body = RequestUtil.getBody(req);
-                User user;
-                try {
-                    user = objectMapper.readValue(body, User.class);
-                    userService.create(user);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                request,
+                response,
+                (req, resp) -> {
+                    String body = RequestUtil.getBody(req);
+                    User user;
+                    try {
+                        user = objectMapper.readValue(body, User.class);
+                        resp.getWriter().write(userService.create(user));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        
 
         get(
-            request,
-            response,
-            Integer::parseInt,
-            (id, pair_) -> {
-                Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
-                HttpServletResponse resp = pair.second();
+                request,
+                response,
+                Integer::parseInt,
+                (id, pair_) -> {
+                    Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
+                    HttpServletResponse resp = pair.second();
 
-                User user = userService.read(id);
+                    User user = userService.read(id);
 
-                resp.setContentType("application/json");
-                resp.setCharacterEncoding("UTF-8");
-                try {
-                    resp.getWriter().write(objectMapper.writeValueAsString(user));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                    resp.setContentType("application/json");
+                    resp.setCharacterEncoding("UTF-8");
+                    try {
+                        resp.getWriter().write(objectMapper.writeValueAsString(user));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
-    
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         put(
-            request,
-            response,
-            Integer::parseInt,
-            (id, pair_) -> {
-                Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
-                HttpServletRequest req = pair.first();
+                request,
+                response,
+                Integer::parseInt,
+                (id, pair_) -> {
+                    Pair<HttpServletRequest, HttpServletResponse> pair = pair_.get();
+                    HttpServletRequest req = pair.first();
 
-                String body = RequestUtil.getBody(req);
-                User user;
-                try {
-                    user = objectMapper.readValue(body, User.class);
-                    user.setId(id);
-                    userService.update(user);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+                    String body = RequestUtil.getBody(req);
+                    User user;
+                    try {
+                        user = objectMapper.readValue(body, User.class);
+                        user.setId(id);
+                        userService.update(user);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     public void doDelete(HttpServletRequest request,
             HttpServletResponse response) throws IOException {
-       
+
         delete(
-            request,
-            response,
-            Integer::parseInt,
-            (id, pair_) -> {
-                userService.delete(id);
-            });
+                request,
+                response,
+                Integer::parseInt,
+                (id, pair_) -> {
+                    userService.delete(id);
+                });
     }
 }

@@ -35,8 +35,8 @@ public class BankServlet extends HttpServlet {
                 Bank bank;
                 try {
                     bank = objectMapper.readValue(body, Bank.class);
-                    bankService.create(bank);
-                } catch (JsonProcessingException e) {
+                    resp.getWriter().write(bankService.create(bank));
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
