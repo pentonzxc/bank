@@ -9,6 +9,8 @@ public class Instances {
     private final static AccountService accountService = new AccountService(bankService, userService);
     private final static TransactionService transactionService = new TransactionService(accountService);
 
+    private final static BankStatementService bankStatementService = new BankStatementService(transactionService); 
+
     public static UserService userService() {
         return userService;
     }
@@ -23,6 +25,10 @@ public class Instances {
 
     public static TransactionService transactionService() {
         return transactionService;
+    }
+
+    public static BankStatementService bankStatementService() {
+        return bankStatementService;
     }
 
 }

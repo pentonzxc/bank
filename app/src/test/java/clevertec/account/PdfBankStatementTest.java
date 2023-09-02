@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import clevertec.bank.Bank;
-import clevertec.service.GenerateAccountBankStatement;
+import clevertec.service.BankStatementService;
 import clevertec.service.TransactionService;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionDescription;
@@ -21,7 +21,7 @@ import clevertec.user.User;
 @ExtendWith(MockitoExtension.class)
 public class PdfBankStatementTest {
 
-        GenerateAccountBankStatement generateAccountBankStatement;
+        BankStatementService generateAccountBankStatement;
 
         @Test
         void whenGeneratePdf_expectedPdf() throws IOException {
@@ -89,7 +89,7 @@ public class PdfBankStatementTest {
                 Mockito.when(transactionService.readAllWhereTargetAccountId(acc.getId())).thenReturn(
                                 whereTarget);
 
-                generateAccountBankStatement = new GenerateAccountBankStatement(transactionService);
+                generateAccountBankStatement = new BankStatementService(transactionService);
 
                 generateAccountBankStatement.generateBankAccountStatement(
                                 acc,
@@ -187,7 +187,7 @@ public class PdfBankStatementTest {
                 Mockito.when(transactionService.readAllWhereTargetAccountId(acc.getId())).thenReturn(
                                 whereTarget);
 
-                generateAccountBankStatement = new GenerateAccountBankStatement(transactionService);
+                generateAccountBankStatement = new BankStatementService(transactionService);
 
                 generateAccountBankStatement.generateBankAccountStatement(
                                 acc,

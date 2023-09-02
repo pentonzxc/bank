@@ -4,6 +4,7 @@
 package clevertec;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -12,6 +13,9 @@ import clevertec.account.Account;
 import clevertec.account.interest.InterestChecker;
 import clevertec.account.interest.InterestCheckerFactory;
 import clevertec.bank.Bank;
+import clevertec.service.AccountService;
+import clevertec.service.BankStatementService;
+import clevertec.service.Instances;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.TransactionAction;
 import clevertec.transaction.TransactionActionType;
@@ -32,69 +36,11 @@ public class App {
      * @throws IOException
      */
     public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
-        // pdf();
-        var mapper = ObjectMapperUtil.get();
-        String value = mapper.writeValueAsString(LocalDateTime.now());
-        System.out.println(mapper.readValue(value, LocalDateTime.class));
+        System.out.println("Hello world!");
     }
 
-    static public void pdf() throws IOException {
-        // TransactionService transactionService = new TransactionService();
-        // AccountService accountService = new AccountService();
-        // var acc1 = accountService.read(1);
-        // var acc2 = accountService.read(2);
-
-        // var check1 = new TransactionCheck();
-        // check1.setOrigin(acc1);
-        // check1.setTarget(acc2);
-        // check1.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
-        // check1.setId(UUID.randomUUID());
-        // check1.setTransferAmount(100);
-        // check1.setCreatedAt(LocalDate.parse("01.01.2015",
-        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay());
-
-        // var check2 = new TransactionCheck();
-        // check2.setOrigin(acc2);
-        // check2.setTarget(acc1);
-        // check2.setDescription(TransactionDescription.ACCOUNT_ACCOUNT_TRANSFER);
-        // check2.setId(UUID.randomUUID());
-        // check2.setTransferAmount(50);
-        // check2.setCreatedAt(
-        // LocalDateTime
-        // .from(LocalDate.parse("15.02.2015",
-        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay()));
-
-        // var check3 = new TransactionCheck();
-        // check3.setOrigin(acc1);
-        // check3.setTarget(acc1);
-        // check3.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
-        // check3.setId(UUID.randomUUID());
-        // check3.setTransferAmount(30);
-        // check3.setCreatedAt(
-        // LocalDateTime
-        // .from(LocalDate.parse("10.10.2018",
-        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay()));
-
-        // var check4 = new TransactionCheck();
-        // check4.setOrigin(acc1);
-        // check4.setTarget(acc1);
-        // check4.setDescription(TransactionDescription.ACCOUNT_TRANSFER_SUB);
-        // check4.setId(UUID.randomUUID());
-        // check4.setTransferAmount(90);
-        // check4.setCreatedAt(
-        // LocalDateTime
-        // .from(LocalDate.parse("12.12.2020",
-        // DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay()));
-
-        // transactionService.create(check1);
-        // transactionService.create(check2);
-        // transactionService.create(check3);
-        // transactionService.create(check4);
-
-        
-    }
-
-    static public void example1() {
+    // Account transfer example
+    static public void accountTransferExample() {
         var bank = new Bank("example");
         var user1 = new User("Kolya", "Urusov", "1990-02-23");
         var user2 = new User("Pasha", "Urusov", "1990-02-23");
@@ -128,7 +74,8 @@ public class App {
         System.out.println("After2 :: " + account2.getBalance());
     }
 
-    static public String example3() {
+    // Show account check
+    static public String checkExample() {
         TransactionCheck c = new TransactionCheck();
         c.setCreatedAt(LocalDateTime.now());
         c.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
@@ -142,10 +89,57 @@ public class App {
         c.setOrigin(acc1);
         c.setTarget(acc2);
         c.setTransferAmount(100);
+        String view = TransactionPrinterFactory.stringPrinter().view(c);
+        System.out.println(view);
 
-        return TransactionPrinterFactory.stringPrinter().view(c);
+        return view;
     }
 
+    // Save checks in check dir
+    static public void checkExample2() {
+        var bank = new Bank("example");
+        var user1 = new User("Kolya", "Urusov", "1990-02-23");
+        var user2 = new User("Pasha", "Urusov", "1990-02-23");
+        var account1 = new Account();
+        account1.setUser(user1);
+        account1.setBank(bank);
+        account1.setBalance(100);
+        var account2 = new Account();
+        account2.setUser(user2);
+        account2.setBank(bank);
+        account2.setBalance(100);
+        account1.setId(1);
+        account2.setId(2);
+
+        Transaction transaction = new Transaction(account1);
+        System.out.println("Before 1:: " + account1.getBalance());
+        System.out.println("Before 2:: " + account2.getBalance());
+
+        Transaction transaction2 = new Transaction(account2, account1);
+
+        try {
+            TransactionComputation runner1 = transaction.begin();
+            runner1.transfer(
+                    new TransactionAction(TransactionActionType.SUB, 5), true);
+            TransactionComputation runner2 = transaction2.begin();
+            runner2.transfer(
+                    new TransactionAction(TransactionActionType.ADD, 15), true);
+        } catch (TransactionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // works only with database
+    static public void pdfBankStatementExample() throws IOException {
+
+        AccountService accountService = Instances.accountService();
+        BankStatementService bankStatementService = Instances.bankStatementService();
+
+        bankStatementService.generateBankAccountStatement(
+                accountService.read(1), LocalDate.now().minusYears(5), LocalDate.now());
+    }
+
+    // Interest checker
     static public void exampleInterestChecker() {
         InterestChecker checker = InterestCheckerFactory.aInterestChecker();
         checker.run();

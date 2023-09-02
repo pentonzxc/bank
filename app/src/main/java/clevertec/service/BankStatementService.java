@@ -25,7 +25,7 @@ import clevertec.util.MoneyUtil;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class GenerateAccountBankStatement {
+public class BankStatementService {
 
     private static DateTimeFormatter ddMMYYYYFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static DateTimeFormatter ddMMYYYYHHmmFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH.mm");
