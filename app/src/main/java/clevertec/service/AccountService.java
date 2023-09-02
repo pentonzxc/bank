@@ -5,36 +5,36 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 import clevertec.account.Account;
 import clevertec.bank.Bank;
 import clevertec.config.DatabaseConfig;
-import clevertec.transaction.Transaction;
-import clevertec.transaction.check.TransactionCheck;
 import clevertec.user.User;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
 public class AccountService {
 
-    BankService bankService;
+    private final BankService bankService;
 
-    UserService userService;
-
-    public AccountService() {
-        this.bankService = new BankService();
-        this.userService = new UserService();
-    }
-
-    public AccountService(BankService bankService, UserService userService) {
-        this.bankService = bankService;
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     public int create(Account account) {
-        String query = "INSERT INTO account(account_number, balance ,currency , opening_date, bank_id, user_id) VALUES (? , ? , ? , ? , ? , ?)";
+        String query = """
+                INSERT INTO account(
+                    account_number,
+                    balance,
+                    currency,
+                    opening_date,
+                    bank_id,
+                    user_id)  VALUES (? , ? , ? , ? , ? , ?)
+                    """;
 
         int id = 0;
 
@@ -63,8 +63,11 @@ public class AccountService {
 
     public boolean update(Account account) {
         String query = """
-                UPDATE account SET account_number = ?, balance = ?, currency = ?, opening_date = ?,
-                bank_id = ?, user_id = ? WHERE id = ?
+                UPDATE account SET
+                    account_number = ?, balance = ?,
+                    currency = ?, opening_date = ?,
+                    bank_id = ?, user_id = ?
+                WHERE id = ?
                 """;
 
         try (Connection con = DatabaseConfig.getConnecion();
@@ -72,10 +75,10 @@ public class AccountService {
             ps.setString(1, account.getAccountNumber());
             ps.setDouble(2, account.getBalance());
             ps.setString(3, account.getCurrency());
-            ps.setTimestamp(4, null);
+            ps.setTimestamp(4, Timestamp.valueOf(account.getOpeningDate()));
             ps.setInt(5, account.getBank().getId());
             ps.setInt(6, account.getUser().getId());
-
+            ps.setInt(7, account.getId());
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
@@ -167,5 +170,4 @@ public class AccountService {
             throw new RuntimeException(ex);
         }
     }
-
 }
