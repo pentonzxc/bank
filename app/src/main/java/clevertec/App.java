@@ -3,36 +3,22 @@
  */
 package clevertec;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import clevertec.account.Account;
 import clevertec.account.interest.InterestChecker;
 import clevertec.account.interest.InterestCheckerFactory;
 import clevertec.bank.Bank;
-import clevertec.service.AccountService;
-import clevertec.service.TransactionService;
-import clevertec.service.UserService;
-import clevertec.transaction.TransactionActionType;
 import clevertec.transaction.Transaction;
 import clevertec.transaction.TransactionAction;
-import clevertec.transaction.TransactionException;
-import clevertec.transaction.TransactionHelper;
+import clevertec.transaction.TransactionActionType;
 import clevertec.transaction.TransactionComputation;
-import clevertec.transaction.check.TransactionDescription;
+import clevertec.transaction.TransactionException;
 import clevertec.transaction.check.TransactionCheck;
+import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionPrinterFactory;
 import clevertec.user.User;
 import clevertec.util.ObjectMapperUtil;
@@ -53,10 +39,10 @@ public class App {
     }
 
     static public void pdf() throws IOException {
-        TransactionService transactionService = new TransactionService();
-        AccountService accountService = new AccountService();
-        var acc1 = accountService.read(1);
-        var acc2 = accountService.read(2);
+        // TransactionService transactionService = new TransactionService();
+        // AccountService accountService = new AccountService();
+        // var acc1 = accountService.read(1);
+        // var acc2 = accountService.read(2);
 
         // var check1 = new TransactionCheck();
         // check1.setOrigin(acc1);
@@ -105,10 +91,7 @@ public class App {
         // transactionService.create(check3);
         // transactionService.create(check4);
 
-        UserService.generateBankAccountStatement(
-                acc1,
-                LocalDate.parse("01.01.2020", DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                LocalDate.parse("05.05.2021", DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+        
     }
 
     static public void example1() {

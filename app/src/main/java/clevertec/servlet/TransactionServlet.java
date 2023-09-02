@@ -1,5 +1,10 @@
 package clevertec.servlet;
 
+import static clevertec.servlet.RequestTemplates.delete;
+import static clevertec.servlet.RequestTemplates.get;
+import static clevertec.servlet.RequestTemplates.post;
+import static clevertec.servlet.RequestTemplates.put;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -9,15 +14,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static clevertec.servlet.RequestTemplates.get;
-import static clevertec.servlet.RequestTemplates.post;
-import static clevertec.servlet.RequestTemplates.put;
-import static clevertec.servlet.RequestTemplates.delete;
-import static clevertec.util.RequestUtil.getBody;
-
 import clevertec.account.Account;
 import clevertec.service.AccountService;
+import clevertec.service.BankService;
 import clevertec.service.TransactionService;
+import clevertec.service.UserService;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionDescription;
 import clevertec.util.ObjectMapperUtil;
@@ -29,7 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class TransactionServlet {
     ObjectMapper objectMapper = ObjectMapperUtil.get();
 
-    AccountService accountService = new AccountService();
+    AccountService accountService = new AccountService(new BankService() , new UserService());
 
     TransactionService transactionService = new TransactionService(accountService);
 

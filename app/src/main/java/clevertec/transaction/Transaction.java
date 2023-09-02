@@ -55,7 +55,7 @@ public class Transaction {
         this.completed = new boolean[1];
     }
 
-    Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> onFailureRollback = f -> {
+    final Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> onFailureRollback = f -> {
         Account copyMain = main.softCopy();
         Account copyAux = main.getId() != aux.getId() ? aux.softCopy() : copyMain;
         TransactionCheck check = null;
@@ -68,7 +68,7 @@ public class Transaction {
         return check;
     };
 
-    Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction = f -> {
+    final Function<BiFunction<Account, Account, TransactionCheck>, TransactionCheck> transaction = f -> {
         TransactionCheck check = null;
 
         Object lock1 = aux.getId() < main.getId() ? main.getLock() : aux.getLock();

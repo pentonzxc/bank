@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Nested;
@@ -23,11 +23,11 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import clevertec.account.Account;
-import clevertec.service.AccountService;
-import clevertec.service.UserService;
-import clevertec.transaction.check.TransactionDescription;
+import clevertec.bank.Bank;
+import clevertec.service.Instances;
 import clevertec.transaction.check.TransactionCheck;
-import clevertec.util.Pair;
+import clevertec.user.User;
+import clevertec.util.DateUtil;
 
 public class TransactionTests {
     List<Account> accounts = getAccounts();
@@ -213,7 +213,6 @@ public class TransactionTests {
 
             try (MockedStatic<LocalDateTime> mockDateTime = Mockito.mockStatic(LocalDateTime.class)) {
                 mockDateTime.when(() -> LocalDateTime.now(Mockito.any(ZoneId.class))).thenReturn(expectedDateTime);
-                System.out.println(LocalDateTime.now());
 
                 TransactionCheck check = transaction.begin().transfer(transactionAction);
                 check_[0] = check;
@@ -230,9 +229,42 @@ public class TransactionTests {
                     () -> assertEquals(expected.getCreatedAt(), actual.getCreatedAt()),
                     () -> assertEquals(expected.getDescription(), actual.getDescription()));
         }
+
+        @Test
+        void whenGenerateCheck_expectedCheckInCheckDir() throws TransactionException, IOException {
+            Account acc = new Account();
+            LocalDateTime dateTime = LocalDateTime.now();
+
+            acc.setId(1);
+            acc.setBalance(100);
+            acc.setBank(new Bank("ClevertecBank"));
+            acc.setUser(new User("Nikolai", "Urusov", "2000-01-01"));
+            acc.setAccountNumber("1234BYN");
+            acc.setCurrency("BYN");
+            acc.setOpeningDate(dateTime);
+
+            try (MockedStatic<LocalDateTime> mockDateTime = Mockito.mockStatic(LocalDateTime.class)) {
+                mockDateTime.when(() -> LocalDateTime.now(Mockito.any(ZoneId.class))).thenReturn(dateTime);
+
+                Transaction transaction = new Transaction(acc);
+                transaction.begin().transfer(new TransactionAction(TransactionActionType.ADD, 100), true);
+            }
+
+            String curPath = new File("").getCanonicalPath();
+            File checkDir = new File(curPath.substring(0, curPath.length() - 4) + File.separator + "check");
+            System.out.println(dateTime);
+
+            assertTrue(Arrays.stream(checkDir.listFiles())
+                    .map(File::getName)
+                    .peek(f -> System.out.println(f))
+                    .filter(name -> name.contains(DateUtil.dateTimeToStringWithoutSeconds(dateTime)))
+                    .findFirst()
+                    .isPresent());
+
+        }
     }
 
     private List<Account> getAccounts() {
-        return new AccountService().readAll();
+        return Instances.accountService().readAll();
     }
 }

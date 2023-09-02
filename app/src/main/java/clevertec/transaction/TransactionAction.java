@@ -1,7 +1,5 @@
 package clevertec.transaction;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NonNull;
 import lombok.Value;
 

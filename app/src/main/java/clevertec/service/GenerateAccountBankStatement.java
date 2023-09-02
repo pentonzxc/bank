@@ -16,6 +16,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import clevertec.account.Account;
 import clevertec.bank.Bank;
+import clevertec.servlet.PathUtil;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionDescription;
 import clevertec.user.User;
@@ -29,6 +30,8 @@ public class GenerateAccountBankStatement {
     private static DateTimeFormatter ddMMYYYYFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static DateTimeFormatter ddMMYYYYHHmmFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH.mm");
 
+    public final static String BankStatementDirPath = PathUtil.resolvePath("bank-statement");
+
     private final TransactionService transactionService;
 
     public File generateBankAccountStatement(
@@ -38,7 +41,7 @@ public class GenerateAccountBankStatement {
 
         LocalDateTime now = LocalDateTime.now();
         String fileName = acc.getId() + "|" + DateUtil.dateTimeToStringWithoutSeconds(now);
-        File file = new File(fileName + ".pdf");
+        File file = new File(BankStatementDirPath, fileName + ".pdf");
 
         PDDocument pdf = new PDDocument();
         pdf.addPage(new PDPage());
@@ -443,5 +446,4 @@ public class GenerateAccountBankStatement {
     public TransactionService getTransactionService() {
         return transactionService;
     }
-
 }

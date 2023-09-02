@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import clevertec.account.Account;
+import clevertec.servlet.PathUtil;
 import clevertec.transaction.check.TransactionCheck;
 import clevertec.transaction.check.TransactionDescription;
 import clevertec.transaction.check.TransactionPrinter;
@@ -25,7 +26,7 @@ public class TransactionHelper {
 
     public class Check {
 
-        public static final String CHECK_DIR_PATH = "check";
+        public static final String CheckDirPath = PathUtil.resolvePath("check");
 
         private Check() {
         }
@@ -108,7 +109,7 @@ public class TransactionHelper {
         }
 
         /**
-         * Save check as file in {@link Check#CHECK_DIR_PATH}.
+         * Save check as file in {@link Check#CheckDirPath}.
          * <p>
          * To transform check into string use {@link TransactionTransformer} type of
          * String.
@@ -122,7 +123,7 @@ public class TransactionHelper {
             String fileName = check.getId() + "|" + dateTimeToStringWithoutSeconds(check.getCreatedAt());
             try {
                 return Files.writeString(
-                        Path.of(CHECK_DIR_PATH, fileName),
+                        Path.of(CheckDirPath, fileName),
                         printer.view(check),
                         StandardCharsets.UTF_8).toFile();
             } catch (IOException e) {

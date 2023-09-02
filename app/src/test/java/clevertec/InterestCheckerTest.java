@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import clevertec.account.Account;
 import clevertec.config.Config;
-import clevertec.service.AccountService;
+import clevertec.service.Instances;
 import clevertec.util.MoneyUtil;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,7 +91,7 @@ public class InterestCheckerTest {
 
     @Test
     void whenNotLastDayInMonth_expectSameMoneyOnAccounts() throws InterruptedException {
-        List<Account> accounts = new AccountService().readAll();
+        List<Account> accounts = Instances.accountService().readAll();
         double sumBefore = balanceSumAllAccounts(accounts);
         checker.setAccounts(() -> accounts);
 
@@ -107,7 +107,7 @@ public class InterestCheckerTest {
 
     @Test
     void whenLastDayInMonth_expectMoreMoneyOnAccounts() throws InterruptedException {
-        List<Account> accounts = new AccountService().readAll();
+        List<Account> accounts = Instances.accountService().readAll();
         double sumBefore = balanceSumAllAccounts(accounts);
         Double expectedSum = MoneyUtil
                 .roundMoney(sumBefore * (1 + Config.getProperty("INTEREST_PERCENT", Double::parseDouble) / 100));
@@ -126,7 +126,7 @@ public class InterestCheckerTest {
 
     @Test
     void whenLastDayMonth_expectOnlyOneRaiseOfMoneyOnAccounts() throws InterruptedException {
-        List<Account> accounts = new AccountService().readAll();
+        List<Account> accounts = Instances.accountService().readAll();
 
         checker.setAccounts(() -> accounts);
         checker.setMockDate(true);

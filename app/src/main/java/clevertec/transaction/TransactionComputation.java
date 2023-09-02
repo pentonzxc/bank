@@ -83,7 +83,7 @@ public class TransactionComputation {
      * <p>
      * If run twice, throws exception.
      * 
-     * @see TransactionHelper.Check#CHECK_DIR_PATH
+     * @see TransactionHelper.Check#CheckDirPath
      * @param action - action to transfer
      * @return TransactionCheck
      * @throws TransactionException
@@ -112,7 +112,7 @@ public class TransactionComputation {
      * Compute transaction and return transaction check of this transaction.
      * 
      * @see TransactionComputation#transfer(TransactionAction, boolean)
-     * @see TransactionHelper.Check#CHECK_DIR_PATH
+     * @see TransactionHelper.Check#CheckDirPath
      * @param action - action to transfer
      * @return TransactionCheck
      * @throws TransactionException

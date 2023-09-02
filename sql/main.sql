@@ -27,10 +27,11 @@ CREATE TABLE IF NOT EXISTS account(
 
 CREATE TABLE IF NOT EXISTS transaction_(
                    id uuid PRIMARY KEY,
-                   begin_date TIMESTAMP NOT NULL,
-                   end_date TIMESTAMP NOT NULL,
+                   created_at TIMESTAMP NOT NULL,
+                   transfer_amount NUMERIC NOT NULL,
                    origin_account_id INT NOT NULL,
                    target_account_id INT NOT NULL,
+                   description TEXT NOT NULL,
                    CONSTRAINT fk_origin_account
                         FOREIGN KEY(origin_account_id) REFERENCES account(id),
                     CONSTRAINT fk_target_account

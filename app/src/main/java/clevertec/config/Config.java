@@ -1,13 +1,14 @@
 package clevertec.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import clevertec.servlet.PathUtil;
 
 /**
  * 
@@ -24,16 +25,17 @@ public class Config {
 
     private static final String SEPARATOR = "=";
 
+    public static final String PropertiesFilePath;
+
     static {
         try {
-            // FIXME: test this in docker
-            // In tests working dir - clevertec-bank-task/app
-            // In app - clevertec-bank-task/app
-            // System.getProperty("user.dir");
-
+            PropertiesFilePath = PathUtil.resolvePath(
+                    String.join(File.separator, new String[] {
+                            "src", "main", "resources", "application.properties"
+                    }));
             nameToProperty = Files
                     .readAllLines(Path.of(
-                            "/home/penton/projects/java/clevertec-bank-task/app/src/main/resources/applicaiton.properties"))
+                            PropertiesFilePath))
                     .stream()
                     .map(String::strip)
                     .map(s -> s.split(SEPARATOR))

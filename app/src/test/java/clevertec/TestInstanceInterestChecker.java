@@ -3,7 +3,6 @@ package clevertec;
 import java.util.concurrent.Future;
 
 import clevertec.account.interest.InterestChecker;
-import clevertec.config.Config;
 
 public class TestInstanceInterestChecker extends InterestChecker {
 
