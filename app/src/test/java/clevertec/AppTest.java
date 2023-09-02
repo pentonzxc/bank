@@ -5,20 +5,9 @@ package clevertec;
 
 
 import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class AppTest {
     @Test
     public void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull("app should have a greeting", classUnderTest.getGreeting());
-    }
-
-
-    @Test
-    public void customTest() {
-        var expected = 2;
-
-        assertEquals(expected ,  2);
     }
 }

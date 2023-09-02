@@ -3,12 +3,147 @@
  */
 package clevertec;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
+import clevertec.account.Account;
+import clevertec.account.interest.InterestChecker;
+import clevertec.account.interest.InterestCheckerFactory;
+import clevertec.bank.Bank;
+import clevertec.service.AccountService;
+import clevertec.service.BankStatementService;
+import clevertec.service.Instances;
+import clevertec.transaction.Transaction;
+import clevertec.transaction.TransactionAction;
+import clevertec.transaction.TransactionActionType;
+import clevertec.transaction.TransactionComputation;
+import clevertec.transaction.TransactionException;
+import clevertec.transaction.check.TransactionCheck;
+import clevertec.transaction.check.TransactionDescription;
+import clevertec.transaction.check.TransactionPrinterFactory;
+import clevertec.user.User;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+
+    /**
+     * @param args
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws IOException
+     */
+    public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
+        
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    // Account transfer example
+    static public void accountTransferExample() {
+        var bank = new Bank("example");
+        var user1 = new User("Kolya", "Urusov", "1990-02-23");
+        var user2 = new User("Pasha", "Urusov", "1990-02-23");
+        var account1 = new Account();
+        account1.setUser(user1);
+        account1.setBank(bank);
+        account1.setBalance(100);
+        var account2 = new Account();
+        account2.setUser(user2);
+        account2.setBank(bank);
+        account2.setBalance(100);
+        account1.setId(1);
+        account2.setId(2);
+
+        Transaction transaction = new Transaction(account1);
+        System.out.println("Before 1:: " + account1.getBalance());
+        System.out.println("Before 2:: " + account2.getBalance());
+
+        Transaction transaction2 = new Transaction(account2, account1);
+
+        try {
+            TransactionComputation runner1 = transaction.begin();
+            runner1.transfer(new TransactionAction(TransactionActionType.SUB, 5));
+            TransactionComputation runner2 = transaction2.begin();
+            runner2.transfer(new TransactionAction(TransactionActionType.ADD, 15));
+        } catch (TransactionException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("After1 :: " + account1.getBalance());
+        System.out.println("After2 :: " + account2.getBalance());
     }
+
+    // Show account check
+    static public String checkExample() {
+        TransactionCheck c = new TransactionCheck();
+        c.setCreatedAt(LocalDateTime.now());
+        c.setDescription(TransactionDescription.ACCOUNT_TRANSFER_ADD);
+        Account acc1 = new Account();
+        acc1.setBank(new Bank("Bank1"));
+        acc1.setAccountNumber("123");
+        Account acc2 = new Account();
+        acc2.setBank(new Bank("Bank 2"));
+        acc2.setAccountNumber("1234");
+        c.setId(UUID.randomUUID());
+        c.setOrigin(acc1);
+        c.setTarget(acc2);
+        c.setTransferAmount(100);
+        String view = TransactionPrinterFactory.stringPrinter().view(c);
+        System.out.println(view);
+
+        return view;
+    }
+
+    // Save checks in check dir
+    static public void checkExample2() {
+        var bank = new Bank("example");
+        var user1 = new User("Kolya", "Urusov", "1990-02-23");
+        var user2 = new User("Pasha", "Urusov", "1990-02-23");
+        var account1 = new Account();
+        account1.setUser(user1);
+        account1.setBank(bank);
+        account1.setBalance(100);
+        var account2 = new Account();
+        account2.setUser(user2);
+        account2.setBank(bank);
+        account2.setBalance(100);
+        account1.setId(1);
+        account2.setId(2);
+
+        Transaction transaction = new Transaction(account1);
+        System.out.println("Before 1:: " + account1.getBalance());
+        System.out.println("Before 2:: " + account2.getBalance());
+
+        Transaction transaction2 = new Transaction(account2, account1);
+
+        try {
+            TransactionComputation runner1 = transaction.begin();
+            runner1.transfer(
+                    new TransactionAction(TransactionActionType.SUB, 5), true);
+            TransactionComputation runner2 = transaction2.begin();
+            runner2.transfer(
+                    new TransactionAction(TransactionActionType.ADD, 15), true);
+        } catch (TransactionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // works only with database
+    static public void pdfBankStatementExample() throws IOException {
+
+        AccountService accountService = Instances.accountService();
+        BankStatementService bankStatementService = Instances.bankStatementService();
+
+        bankStatementService.generateBankAccountStatement(
+                accountService.read(1), LocalDate.now().minusYears(5), LocalDate.now());
+    }
+
+    // Interest checker
+    static public void exampleInterestChecker() {
+        InterestChecker checker = InterestCheckerFactory.aInterestChecker();
+        checker.run();
+
+        checker.stop();
+    }
+
 }
